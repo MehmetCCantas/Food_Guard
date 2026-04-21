@@ -1,0 +1,118 @@
+/* ==========================================
+   Food Share Platform — Realistic Global Styles
+   Color Palette: Warm Earthy Tones & Glassmorphism
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Primary Colors - Muted Terracotta */
+  --primary: #D45D44;
+  --primary-dark: #B84B35;
+  --primary-light: #EB856F;
+  --primary-hover: #C04E38;
+  --accent: #2D5A46; /* Sage Green */
+
+  /* Neutrals - Warm Greys */
+  --bg-main: #FDFCFB;
+  --bg-card: #FFFFFF;
+  --bg-sidebar: rgba(255, 255, 255, 0.7);
+  --bg-navbar: rgba(255, 255, 255, 0.8);
+
+  /* Text - Deep Charcoal */
+  --text-primary: #1A1A1A;
+  --text-secondary: #525252;
+  --text-light: #8C8C8C;
+  --text-white: #FFFFFF;
+
+  /* Borders - Soft & Subtle */
+  --border-light: #EFE9E4;
+  --border-medium: #E3DDD8;
+
+  /* Shadows - Layered & Soft */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px -2px rgba(186, 126, 97, 0.12);
+  --shadow-lg: 0 20px 40px -8px rgba(186, 126, 97, 0.08);
+  --shadow-card: 0 10px 30px -4px rgba(0, 0, 0, 0.03);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: blur(14px);
+
+  /* Spacing */
+  --sidebar-width: 240px;
+  --navbar-height: 72px;
+
+  /* Radius - More Organic/Friendly */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-full: 100px;
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+select {
+  font-family: inherit;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
+}

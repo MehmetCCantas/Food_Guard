@@ -1,0 +1,330 @@
+/* ==========================================
+   Dashboard — Stats, Listings & Leaderboard
+   ========================================== */
+
+/* ---- Stats Section ---- */
+.statsSection {
+    margin-bottom: 28px;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.statCard {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.statCard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.statIconWrap {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #DC4C4C15, #DC4C4C30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.statIconBlue {
+    background: linear-gradient(135deg, #4C7ADC15, #4C7ADC30);
+}
+
+.statIconGreen {
+    background: linear-gradient(135deg, #4CAF5015, #4CAF5030);
+}
+
+.statIconYellow {
+    background: linear-gradient(135deg, #FFC10715, #FFC10730);
+}
+
+.statIcon {
+    font-size: 1.5rem;
+}
+
+.statInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.statValue {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.statLabel {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* ---- View Tabs ---- */
+.viewTabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 0;
+}
+
+.viewTab,
+.viewTabActive {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    bottom: -2px;
+    border-bottom: 2px solid transparent;
+}
+
+.viewTab:hover {
+    color: var(--text-primary);
+    background: rgba(220, 76, 76, 0.05);
+}
+
+.viewTabActive {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    background: rgba(220, 76, 76, 0.05);
+}
+
+/* ---- Page Header ---- */
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.pageTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* ---- Donation Grid ---- */
+.donationGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* ---- Loading ---- */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border-light);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 12px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---- Empty State ---- */
+.emptyState {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-secondary);
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.emptyText {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.emptySubtext {
+    font-size: 0.9rem;
+    margin-top: 8px;
+    color: var(--text-light);
+}
+
+/* ---- Leaderboard Section ---- */
+.leaderboardSection {
+    padding-top: 4px;
+}
+
+.leaderboardTitle {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.leaderboardSubtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    margin-bottom: 24px;
+}
+
+.leaderboardList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.leaderboardCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.leaderboardCard:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+.leaderboardTop3 {
+    border-left: 3px solid var(--primary);
+    background: linear-gradient(90deg, rgba(220, 76, 76, 0.03), transparent);
+}
+
+.leaderboardRank {
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.medalEmoji {
+    font-size: 1.5rem;
+}
+
+.rankNumber {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.leaderboardAvatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.leaderboardInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.leaderboardName {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.leaderboardMeta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.leaderboardScore {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.scoreValue {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.scoreLabel {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .viewTabs {
+        gap: 4px;
+    }
+
+    .viewTab,
+    .viewTabActive {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .leaderboardCard {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+}

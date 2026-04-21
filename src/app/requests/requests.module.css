@@ -1,0 +1,297 @@
+/* ==========================================
+   Requests Page — Styles
+   ========================================== */
+
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.pageTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* ---- Tab Switcher ---- */
+.tabSwitcher {
+    display: flex;
+    background: var(--bg-card);
+    border-radius: var(--radius-full);
+    padding: 4px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.tab {
+    padding: 8px 24px;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.tab:hover {
+    color: var(--primary);
+}
+
+.tabActive {
+    composes: tab;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--text-white);
+    box-shadow: 0 2px 8px rgba(220, 76, 76, 0.3);
+}
+
+.tabBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    margin-left: 6px;
+    background: rgba(220, 76, 76, 0.15);
+    color: var(--primary);
+}
+
+.tabActive .tabBadge {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+/* ---- Requests List ---- */
+.requestsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ---- Request Card ---- */
+.requestCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    transition: all var(--transition-fast);
+}
+
+.requestCard:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.requestImage {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.requestInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.requestTitle {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.requestMeta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.requestPerson {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.requestQuantity {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.requestDate {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.requestMessage {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 4px;
+    padding: 6px 10px;
+    background: var(--bg-main);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--primary-light);
+}
+
+/* ---- Status Badges ---- */
+.requestStatus {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusBadge {
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.statusPending {
+    composes: statusBadge;
+    background: rgba(234, 179, 8, 0.1);
+    color: #ca8a04;
+}
+
+.statusAccepted {
+    composes: statusBadge;
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.statusRejected {
+    composes: statusBadge;
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.statusCompleted {
+    composes: statusBadge;
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+/* ---- Action Buttons ---- */
+.actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.acceptBtn {
+    padding: 7px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+}
+
+.acceptBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+}
+
+.rejectBtn {
+    padding: 7px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.05);
+    transition: all var(--transition-fast);
+}
+
+.rejectBtn:hover {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
+.completeBtn {
+    padding: 7px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 6px rgba(220, 76, 76, 0.3);
+}
+
+.completeBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(220, 76, 76, 0.4);
+}
+
+/* ---- Empty State ---- */
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.emptyText {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.emptySubtext {
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .requestCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .requestStatus {
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

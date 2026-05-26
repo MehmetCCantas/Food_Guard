@@ -3,51 +3,39 @@
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import styles from './login.module.css';
-import { useAuth } from '@/contexts/AuthContext';
+import styles from '../login/login.module.css';
+import { authService } from '@/services/authService';
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
     const router = useRouter();
-    const { login } = useAuth();
 
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const [error, setError] = useState('');
     const [apiError, setApiError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const validate = (): boolean => {
-        const newErrors: { email?: string; password?: string } = {};
-
-        if (!email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            newErrors.email = 'Please enter a valid email';
-        }
-
-        if (!password) {
-            newErrors.password = 'Password is required';
-        } else if (password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setApiError('');
+        setError('');
+        setSuccessMessage('');
 
-        if (!validate()) return;
+        if (!email.trim()) {
+            setError('Email is required');
+            return;
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            setError('Please enter a valid email');
+            return;
+        }
 
         setLoading(true);
         try {
-            await login(email, password);
-            router.push('/dashboard');
-        } catch (error) {
-            console.error('Login failed:', error);
-            setApiError('Invalid email or password. Please try again.');
+            await authService.forgotPassword(email);
+            setSuccessMessage('If an account with that email exists, a password reset link has been sent.');
+        } catch (err: any) {
+            console.error('Forgot password failed:', err);
+            setApiError(err.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -81,12 +69,18 @@ export default function LoginPage() {
             {/* Right Form Panel */}
             <div className={styles.formPanel}>
                 <div className={styles.formWrapper}>
-                    <h2 className={styles.formTitle}>Welcome Back</h2>
-                    <p className={styles.formSubtitle}>Sign in to your account to continue</p>
+                    <h2 className={styles.formTitle}>Reset Password</h2>
+                    <p className={styles.formSubtitle}>Enter your email to receive a password reset link</p>
 
                     {apiError && (
                         <div className={styles.apiError}>
                             <span>⚠️</span> {apiError}
+                        </div>
+                    )}
+
+                    {successMessage && (
+                        <div className={styles.apiError} style={{ backgroundColor: 'rgba(46, 204, 113, 0.1)', borderColor: 'rgba(46, 204, 113, 0.3)', color: '#27ae60' }}>
+                            <span>✅</span> {successMessage}
                         </div>
                     )}
 
@@ -96,32 +90,13 @@ export default function LoginPage() {
                             <input
                                 id="email"
                                 type="email"
-                                className={errors.email ? styles.inputError : styles.input}
+                                className={error ? styles.inputError : styles.input}
                                 placeholder="you@example.com"
                                 value={email}
-                                onChange={(e) => { setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: undefined })); }}
+                                onChange={(e) => { setEmail(e.target.value); setError(''); }}
                                 autoComplete="email"
                             />
-                            {errors.email && <span className={styles.errorText}>⚠ {errors.email}</span>}
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <div className={styles.passwordHeader}>
-                                <label className={styles.label} htmlFor="password">Password</label>
-                                <Link href="/forgot-password" className={styles.forgotPasswordLink}>
-                                    Forgot Password?
-                                </Link>
-                            </div>
-                            <input
-                                id="password"
-                                type="password"
-                                className={errors.password ? styles.inputError : styles.input}
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => { setPassword(e.target.value); setErrors((prev) => ({ ...prev, password: undefined })); }}
-                                autoComplete="current-password"
-                            />
-                            {errors.password && <span className={styles.errorText}>⚠ {errors.password}</span>}
+                            {error && <span className={styles.errorText}>⚠ {error}</span>}
                         </div>
 
                         <button
@@ -130,17 +105,17 @@ export default function LoginPage() {
                             disabled={loading}
                         >
                             {loading ? (
-                                <><span className={styles.spinner} /> Signing In...</>
+                                <><span className={styles.spinner} /> Sending...</>
                             ) : (
-                                'Sign In'
+                                'Send Reset Link'
                             )}
                         </button>
                     </form>
 
                     <p className={styles.switchText}>
-                        Don&apos;t have an account?{' '}
-                        <Link href="/register" className={styles.switchLink}>
-                            Sign Up
+                        Remember your password?{' '}
+                        <Link href="/login" className={styles.switchLink}>
+                            Sign In
                         </Link>
                     </p>
                 </div>

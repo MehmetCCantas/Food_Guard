@@ -1,59 +1,75 @@
 /* ==========================================
-   Food Share Platform — Realistic Global Styles
-   Color Palette: Warm Earthy Tones & Glassmorphism
+   Food Share Platform — Premium Global Styles
+   Color Palette: Warm Earthy Tones, Emerald Accents & Advanced Glassmorphism
    ========================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Primary Colors - Muted Terracotta */
+  /* Primary Colors - Rich Terracotta Gradient Base */
   --primary: #D45D44;
   --primary-dark: #B84B35;
   --primary-light: #EB856F;
   --primary-hover: #C04E38;
-  --accent: #2D5A46; /* Sage Green */
+  --primary-glow: rgba(212, 93, 68, 0.15);
+  
+  /* Accent Colors - Elegant Emerald Sage & Fresh Gold */
+  --accent: #2A5C43; /* Sage Green */
+  --accent-light: #3D7A5D;
+  --accent-hover: #1E4631;
+  --accent-glow: rgba(42, 92, 67, 0.1);
+  --warning: #F59E0B;
+  --success: #10B981;
+  
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, #D45D44 0%, #B84B35 100%);
+  --grad-accent: linear-gradient(135deg, #2A5C43 0%, #1E4631 100%);
+  --grad-warm: linear-gradient(135deg, #FFF9F6 0%, #FDFCFB 100%);
+  --grad-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.5) 100%);
 
-  /* Neutrals - Warm Greys */
-  --bg-main: #FDFCFB;
+  /* Neutrals - High Premium Greys */
+  --bg-main: #FAF8F5;
   --bg-card: #FFFFFF;
-  --bg-sidebar: rgba(255, 255, 255, 0.7);
-  --bg-navbar: rgba(255, 255, 255, 0.8);
+  --bg-sidebar: rgba(255, 255, 255, 0.45);
+  --bg-navbar: rgba(255, 255, 255, 0.55);
 
-  /* Text - Deep Charcoal */
-  --text-primary: #1A1A1A;
-  --text-secondary: #525252;
-  --text-light: #8C8C8C;
+  /* Text - Luxurious Deep Charcoal */
+  --text-primary: #1F1B1A;
+  --text-secondary: #5C5452;
+  --text-light: #9C9491;
   --text-white: #FFFFFF;
 
-  /* Borders - Soft & Subtle */
-  --border-light: #EFE9E4;
+  /* Borders - Soft & Organic */
+  --border-light: rgba(239, 233, 228, 0.6);
   --border-medium: #E3DDD8;
+  --border-glow: rgba(212, 93, 68, 0.2);
 
-  /* Shadows - Layered & Soft */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 20px -2px rgba(186, 126, 97, 0.12);
-  --shadow-lg: 0 20px 40px -8px rgba(186, 126, 97, 0.08);
-  --shadow-card: 0 10px 30px -4px rgba(0, 0, 0, 0.03);
+  /* Shadows - Layered & Luxurious (Three-Dimensional Depth) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 10px 30px -4px rgba(186, 126, 97, 0.08);
+  --shadow-lg: 0 24px 50px -12px rgba(186, 126, 97, 0.12);
+  --shadow-card: 0 16px 40px -6px rgba(45, 30, 25, 0.04);
+  --shadow-premium: 0 20px 40px -10px rgba(212, 93, 68, 0.12);
 
   /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-blur: blur(14px);
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-blur: blur(20px);
 
   /* Spacing */
-  --sidebar-width: 240px;
-  --navbar-height: 72px;
+  --sidebar-width: 250px;
+  --navbar-height: 76px;
 
   /* Radius - More Organic/Friendly */
-  --radius-sm: 8px;
-  --radius-md: 14px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
   --radius-lg: 24px;
-  --radius-full: 100px;
+  --radius-full: 9999px;
 
-  /* Transitions */
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transitions - Pürüzsüz Mikro Etkileşimler */
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 *,
@@ -70,12 +86,20 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-main);
+  background-image: radial-gradient(circle at 10% 20%, rgba(212, 93, 68, 0.02) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(42, 92, 67, 0.02) 0%, transparent 40%);
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Form Elemanları ve Butonlar için Yazı Tipi */
+button, input, select, textarea {
+  font-family: inherit;
+  color: inherit;
 }
 
 a {
@@ -92,16 +116,11 @@ button {
   cursor: pointer;
   border: none;
   outline: none;
-  font-family: inherit;
 }
 
-select {
-  font-family: inherit;
-}
-
-/* Scrollbar styling */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -109,10 +128,40 @@ select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: 3px;
+  background: #E3DDD8;
+  border-radius: 4px;
+  border: 2px solid var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-light);
 }
+
+/* Premium Mikro Animasyonlar */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseSoft {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 93, 68, 0.4); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(212, 93, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 93, 68, 0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 2s infinite ease-in-out;
+}

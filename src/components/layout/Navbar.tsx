@@ -7,13 +7,30 @@ import styles from './Navbar.module.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useChat } from '@/contexts/ChatContext';
-import { NotificationType, AppNotification } from '@/types';
+import { NotificationType } from '@/types';
+import { 
+    Bell, 
+    MessageSquare, 
+    Inbox, 
+    CheckCircle, 
+    XCircle, 
+    User, 
+    Settings, 
+    Package, 
+    ShoppingBag, 
+    ClipboardList, 
+    BarChart2, 
+    LogOut,
+    BellOff,
+    ChevronDown,
+    Sparkles
+} from 'lucide-react';
 
-const notifIcons: Record<NotificationType, string> = {
-    [NotificationType.NEW_MESSAGE]: '💬',
-    [NotificationType.NEW_REQUEST]: '📬',
-    [NotificationType.REQUEST_ACCEPTED]: '✅',
-    [NotificationType.REQUEST_REJECTED]: '❌',
+const notifIcons: Record<NotificationType, React.ComponentType<any>> = {
+    [NotificationType.NEW_MESSAGE]: MessageSquare,
+    [NotificationType.NEW_REQUEST]: Inbox,
+    [NotificationType.REQUEST_ACCEPTED]: CheckCircle,
+    [NotificationType.REQUEST_REJECTED]: XCircle,
 };
 
 export default function Navbar() {
@@ -52,13 +69,15 @@ export default function Navbar() {
     return (
         <nav className={styles.navbar}>
             <Link href="/dashboard" className={styles.logo}>
-                🌿 Food Guard
+                <Sparkles size={20} className={styles.logoIcon} />
+                <span>Food Guard</span>
             </Link>
 
             <div className={styles.navCenter}>
                 {isLoggedIn && isDonor && (
                     <Link href="/my-donations" className={styles.navLink}>
-                        📦 My Listings
+                        <Package size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                        <span>İlanlarım</span>
                     </Link>
                 )}
             </div>
@@ -78,15 +97,7 @@ export default function Navbar() {
                                 }}
                                 aria-label="Bildirimler"
                             >
-                                <svg
-                                    className={styles.bellIcon}
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    width="20"
-                                    height="20"
-                                >
-                                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
-                                </svg>
+                                <Bell className={styles.bellIcon} size={20} strokeWidth={2.2} />
                                 {totalBadge > 0 && (
                                     <span className={styles.notifBadge}>
                                         {totalBadge > 99 ? '99+' : totalBadge}
@@ -97,7 +108,10 @@ export default function Navbar() {
                             {showNotifPanel && (
                                 <div className={styles.notifPanel}>
                                     <div className={styles.notifPanelHeader}>
-                                        <span className={styles.notifPanelTitle}>🔔 Bildirimler</span>
+                                        <span className={styles.notifPanelTitle}>
+                                            <Bell size={16} style={{ marginRight: '6px', color: 'var(--primary)', verticalAlign: 'middle' }} />
+                                            Bildirimler
+                                        </span>
                                         {unreadCount > 0 && (
                                             <button className={styles.markAllBtn} onClick={markAllRead}>
                                                 Tümünü okundu işaretle
@@ -108,35 +122,38 @@ export default function Navbar() {
                                     <div className={styles.notifList}>
                                         {notifications.length === 0 ? (
                                             <div className={styles.notifEmpty}>
-                                                <span>🔕</span>
+                                                <BellOff size={32} strokeWidth={1.5} style={{ color: 'var(--text-light)', marginBottom: '4px' }} />
                                                 <p>Henüz bildirim yok</p>
                                             </div>
                                         ) : (
-                                            notifications.slice(0, 20).map((notif) => (
-                                                <div
-                                                    key={notif.id}
-                                                    className={`${styles.notifItem} ${!notif.isRead ? styles.notifUnread : ''}`}
-                                                    onClick={() => {
-                                                        markRead(notif.id);
-                                                        if (notif.link) router.push(notif.link);
-                                                        setShowNotifPanel(false);
-                                                    }}
-                                                >
-                                                    <span className={styles.notifIcon}>
-                                                        {notifIcons[notif.type] || '🔔'}
-                                                    </span>
-                                                    <div className={styles.notifContent}>
-                                                        <div className={styles.notifTitle}>{notif.title}</div>
-                                                        <div className={styles.notifBody}>{notif.body}</div>
-                                                        <div className={styles.notifTime}>
-                                                            {new Date(notif.createdAt).toLocaleTimeString('tr-TR', {
-                                                                hour: '2-digit', minute: '2-digit'
-                                                            })}
+                                            notifications.slice(0, 20).map((notif) => {
+                                                const IconComp = notifIcons[notif.type] || Bell;
+                                                return (
+                                                    <div
+                                                        key={notif.id}
+                                                        className={`${styles.notifItem} ${!notif.isRead ? styles.notifUnread : ''}`}
+                                                        onClick={() => {
+                                                            markRead(notif.id);
+                                                            if (notif.link) router.push(notif.link);
+                                                            setShowNotifPanel(false);
+                                                        }}
+                                                    >
+                                                        <span className={styles.notifIcon}>
+                                                            <IconComp size={20} strokeWidth={2} style={{ color: 'var(--primary)' }} />
+                                                        </span>
+                                                        <div className={styles.notifContent}>
+                                                            <div className={styles.notifTitle}>{notif.title}</div>
+                                                            <div className={styles.notifBody}>{notif.body}</div>
+                                                            <div className={styles.notifTime}>
+                                                                {new Date(notif.createdAt).toLocaleTimeString('tr-TR', {
+                                                                    hour: '2-digit', minute: '2-digit'
+                                                                })}
+                                                            </div>
                                                         </div>
+                                                        {!notif.isRead && <span className={styles.unreadDot} />}
                                                     </div>
-                                                    {!notif.isRead && <span className={styles.unreadDot} />}
-                                                </div>
-                                            ))
+                                                );
+                                            })
                                         )}
                                     </div>
                                 </div>
@@ -162,7 +179,7 @@ export default function Navbar() {
                                         ? `${user.firstName} ${user.lastName}`
                                         : user.fullName}
                                 </span>
-                                <span className={styles.chevron}>▾</span>
+                                <ChevronDown className={styles.chevron} size={14} strokeWidth={2.5} />
                             </button>
 
                             {showDropdown && (
@@ -186,13 +203,22 @@ export default function Navbar() {
                                     <div className={styles.dropdownDivider} />
 
                                     <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                        👤 Profilim
+                                        <span className={styles.dropdownItemLabel}>
+                                            <User size={16} strokeWidth={2} className={styles.menuIcon} />
+                                            Profilim
+                                        </span>
                                     </Link>
                                     <Link href="/settings" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                        ⚙️ Ayarlar
+                                        <span className={styles.dropdownItemLabel}>
+                                            <Settings size={16} strokeWidth={2} className={styles.menuIcon} />
+                                            Ayarlar
+                                        </span>
                                     </Link>
                                     <Link href="/chat" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                        💬 Mesajlarım
+                                        <span className={styles.dropdownItemLabel}>
+                                            <MessageSquare size={16} strokeWidth={2} className={styles.menuIcon} />
+                                            Mesajlarım
+                                        </span>
                                         {chatUnread > 0 && (
                                             <span className={styles.dropdownBadge}>{chatUnread}</span>
                                         )}
@@ -200,24 +226,37 @@ export default function Navbar() {
 
                                     {isDonor && (
                                         <Link href="/my-donations" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                            📦 İlanlarım
+                                            <span className={styles.dropdownItemLabel}>
+                                                <Package size={16} strokeWidth={2} className={styles.menuIcon} />
+                                                İlanlarım
+                                            </span>
                                         </Link>
                                     )}
                                     {isRecipient && (
                                         <Link href="/my-collections" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                            🛍️ Koleksiyonlarım
+                                            <span className={styles.dropdownItemLabel}>
+                                                <ShoppingBag size={16} strokeWidth={2} className={styles.menuIcon} />
+                                                Koleksiyonlarım
+                                            </span>
                                         </Link>
                                     )}
                                     <Link href="/requests" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                        📋 Talepler
+                                        <span className={styles.dropdownItemLabel}>
+                                            <ClipboardList size={16} strokeWidth={2} className={styles.menuIcon} />
+                                            Talepler
+                                        </span>
                                     </Link>
                                     <Link href="/impact" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                                        📊 Etkileşimim
+                                        <span className={styles.dropdownItemLabel}>
+                                            <BarChart2 size={16} strokeWidth={2} className={styles.menuIcon} />
+                                            Etkileşimim
+                                        </span>
                                     </Link>
 
                                     <div className={styles.dropdownDivider} />
                                     <button className={styles.dropdownLogout} onClick={handleLogout}>
-                                        🚪 Çıkış Yap
+                                        <LogOut size={16} strokeWidth={2} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                        <span>Çıkış Yap</span>
                                     </button>
                                 </div>
                             )}

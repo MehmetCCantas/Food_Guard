@@ -84,4 +84,53 @@ export const authService = {
         if (typeof window === 'undefined') return false;
         return !!localStorage.getItem('access_token');
     },
+
+    /**
+     * Send email verification code — POST /auth/send-verification-email
+     */
+    async sendVerificationEmail(): Promise<{ message: string }> {
+        return await apiClient.post('/auth/send-verification-email', {});
+    },
+
+    /**
+     * Verify email with code — POST /auth/verify-email
+     */
+    async verifyEmail(code: string): Promise<{ message: string }> {
+        return await apiClient.post('/auth/verify-email', { code });
+    },
+
+    /**
+     * Send phone verification code (MOCK) — POST /auth/send-phone-verification
+     */
+    async sendPhoneVerification(): Promise<{ message: string }> {
+        return await apiClient.post('/auth/send-phone-verification', {});
+    },
+
+    /**
+     * Verify phone with code (MOCK / Firebase Token) — POST /auth/verify-phone
+     */
+    async verifyPhone(idToken: string): Promise<{ message: string }> {
+        return await apiClient.post('/auth/verify-phone', { idToken });
+    },
+
+    /**
+     * Change password — POST /auth/change-password
+     */
+    async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+        return await apiClient.post('/auth/change-password', { currentPassword, newPassword });
+    },
+
+    /**
+     * Forgot password — POST /auth/forgot-password
+     */
+    async forgotPassword(email: string): Promise<{ message: string }> {
+        return await apiClient.post('/auth/forgot-password', { email });
+    },
+
+    /**
+     * Reset password — POST /auth/reset-password
+     */
+    async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+        return await apiClient.post('/auth/reset-password', { token, newPassword });
+    },
 };

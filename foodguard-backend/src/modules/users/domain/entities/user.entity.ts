@@ -6,6 +6,7 @@ export class User {
   passwordHash: string;
   fullName: string;
   role: UserRole;
+  phoneNumber?: string;
   city: string;
   district: string;
   addressText?: string;
@@ -17,6 +18,13 @@ export class User {
 
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+
+  emailVerificationCode?: string;
+  emailVerificationExpires?: Date;
+
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
+  phoneVerificationCode?: string;
 
   createdAt: Date;
   updatedAt: Date;

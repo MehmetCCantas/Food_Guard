@@ -150,6 +150,25 @@
     letter-spacing: 0.02em;
 }
 
+.passwordHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgotPasswordLink {
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.forgotPasswordLink:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
 .input {
     width: 100%;
     padding: 12px 16px;

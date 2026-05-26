@@ -62,6 +62,21 @@ export class UserOrmEntity {
   @Column({ type: 'timestamp with time zone', nullable: true })
   passwordResetExpires?: Date;
 
+  @Column({ nullable: true })
+  emailVerificationCode?: string;
+
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  emailVerificationExpires?: Date;
+
+  @Column({ type: 'boolean', default: false })
+  isEmailVerified: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  isPhoneVerified: boolean;
+
+  @Column({ nullable: true })
+  phoneVerificationCode?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

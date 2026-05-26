@@ -51,7 +51,7 @@ class SocketService {
     }
 
     getSocket(): Socket | null {
-        return this.socket;
+        return this.chatSocket;
     }
 
     isConnected(): boolean {

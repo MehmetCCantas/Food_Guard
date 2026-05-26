@@ -4,4 +4,5 @@ export const IAdminService = Symbol('IAdminService');
 
 export interface IAdminService {
   verifyUser(userId: string): Promise<User>;
+  getAllUsers(): Promise<User[]>;
 }

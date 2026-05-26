@@ -98,6 +98,11 @@ export default function ProfilePage() {
                     <div className={styles.profileName}>{user.fullName}</div>
                     <div className={styles.profileEmail}>{user.email}</div>
                     <div className={styles.roleBadge}>{roleLabels[user.role] || user.role}</div>
+                    {(user.ratingCount ?? 0) > 0 && (
+                        <div style={{ marginTop: '12px', fontSize: '1.1rem', fontWeight: 600, color: '#f59e0b' }}>
+                            ⭐ {Number(user.ratingScore).toFixed(1)} <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 400 }}>({user.ratingCount} reviews)</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* ---- Main Content ---- */}

@@ -158,7 +158,7 @@ export default function MyDonationsPage() {
                 directions: form.directions,
                 latitude: form.latitude,
                 longitude: form.longitude,
-                storageCondition: form.storageCondition,
+                storageCondition: form.storageCondition as any,
                 storageDurationHours: form.storageDurationHours,
                 hasSmellChange: form.hasSmellChange,
                 file: form.file || undefined,

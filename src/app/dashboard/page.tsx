@@ -6,21 +6,23 @@ import DonationCard from '@/components/donations/DonationCard';
 import DonationFilters from '@/components/donations/DonationFilters';
 import { Product, ProductFilters } from '@/types';
 import { productService } from '@/services/productService';
-import { dashboardService, PlatformStats, LeaderboardEntry } from '@/services/dashboardService';
 import { useAuth } from '@/contexts/AuthContext';
+import { 
+    Package, 
+    Store, 
+    ClipboardList, 
+    MessageSquare, 
+    Utensils 
+} from 'lucide-react';
 
 export default function DashboardPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [filters, setFilters] = useState<ProductFilters>({});
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState<PlatformStats | null>(null);
-    const [statsLoading, setStatsLoading] = useState(false);
-    // Remove leaderboard and activeView as they are no longer needed
-    const { isDonor, isRecipient, user } = useAuth();
+    const { isDonor, user } = useAuth();
     
     // Additional hooks for realistic counts
     const { totalUnread } = require('@/contexts/ChatContext').useChat();
-    // For requests count, we can mock it or leave a placeholder if context isn't readily available, but I'll use 0 as default since it requires fetching
     const [requestCount, setRequestCount] = useState(0);
     
     const fetchProducts = useCallback(async () => {
@@ -37,7 +39,6 @@ export default function DashboardPage() {
     }, [filters]);
 
     const fetchDashboardData = useCallback(async () => {
-        // Just fetch requests to calculate realistic counts
         try {
             const { requestService } = await import('@/services/requestService');
             const reqs = await requestService.getMyRequests(1, 100);
@@ -59,28 +60,21 @@ export default function DashboardPage() {
         setFilters(newFilters);
     };
 
-    const getMedalEmoji = (index: number) => {
-        if (index === 0) return '🥇';
-        if (index === 1) return '🥈';
-        if (index === 2) return '🥉';
-        return `#${index + 1}`;
-    };
-
     return (
-        <div>
+        <div className="animate-fade-in">
             {/* Platform Stats Cards */}
             <div className={styles.statsSection}>
                 <div className={styles.statsGrid}>
                     {isDonor && (
                         <div className={styles.statCard}>
                             <div className={styles.statIconWrap}>
-                                <span className={styles.statIcon}>📦</span>
+                                <Package size={22} className={styles.iconPrimary} />
                             </div>
                             <div className={styles.statInfo}>
                                 <span className={styles.statValue}>
                                     {loading ? '—' : products.filter(p => p.donorId === user?.id).length}
                                 </span>
-                                <span className={styles.statLabel}>My Active Listings</span>
+                                <span className={styles.statLabel}>Aktif İlanlarım</span>
                             </div>
                         </div>
                     )}
@@ -88,37 +82,37 @@ export default function DashboardPage() {
                     {!isDonor && (
                         <div className={styles.statCard}>
                             <div className={styles.statIconWrap}>
-                                <span className={styles.statIcon}>🏪</span>
+                                <Store size={22} className={styles.iconPrimary} />
                             </div>
                             <div className={styles.statInfo}>
                                 <span className={styles.statValue}>
                                     {loading ? '—' : products.length}
                                 </span>
-                                <span className={styles.statLabel}>Available Listings</span>
+                                <span className={styles.statLabel}>Mevcut İlanlar</span>
                             </div>
                         </div>
                     )}
                     <div className={styles.statCard}>
                         <div className={`${styles.statIconWrap} ${styles.statIconBlue}`}>
-                            <span className={styles.statIcon}>📋</span>
+                            <ClipboardList size={22} className={styles.iconBlue} />
                         </div>
                         <div className={styles.statInfo}>
                             <span className={styles.statValue}>
                                 {requestCount}
                             </span>
-                            <span className={styles.statLabel}>{isDonor ? 'Incoming Requests' : 'My Requests'}</span>
+                            <span className={styles.statLabel}>{isDonor ? 'Gelen Talepler' : 'Taleplerim'}</span>
                         </div>
                     </div>
 
                     <div className={styles.statCard}>
                         <div className={`${styles.statIconWrap} ${styles.statIconYellow}`}>
-                            <span className={styles.statIcon}>💬</span>
+                            <MessageSquare size={22} className={styles.iconYellow} />
                         </div>
                         <div className={styles.statInfo}>
                             <span className={styles.statValue}>
                                 {totalUnread || 0}
                             </span>
-                            <span className={styles.statLabel}>Unread Messages</span>
+                            <span className={styles.statLabel}>Okunmamış Mesajlar</span>
                         </div>
                     </div>
                 </div>
@@ -126,32 +120,33 @@ export default function DashboardPage() {
 
             {/* Listings Header */}
             <div className={styles.pageHeader}>
-                <h1 className={styles.pageTitle}>{isDonor ? 'My Listings' : 'Available Food Listings'}</h1>
+                <h1 className={styles.pageTitle}>{isDonor ? 'İlanlarım' : 'Mevcut Gıda İlanları'}</h1>
                 <DonationFilters filters={filters} onFilterChange={handleFilterChange} />
             </div>
 
             {loading ? (
-                        <div className={styles.loading}>
-                            <div className={styles.spinner} />
-                            <span>Loading listings...</span>
-                        </div>
-                    ) : products.length === 0 ? (
-                        <div className={styles.emptyState}>
-                            <div className={styles.emptyIcon}>🍽️</div>
-                            <p className={styles.emptyText}>No listings found</p>
-                            <p className={styles.emptySubtext}>Try adjusting your filters or check back later.</p>
-                        </div>
-                    ) : (
-                        <div className={styles.donationGrid}>
-                            {products.map((product) => (
-                                <DonationCard
-                                    key={product.id}
-                                    product={product}
-                                    onRequestSuccess={() => fetchProducts()}
-                                />
-                            ))}
-                        </div>
-                    )}
+                <div className={styles.loading}>
+                    <div className={styles.spinner} />
+                    <span>İlanlar yükleniyor...</span>
+                </div>
+            ) : products.length === 0 ? (
+                <div className={styles.emptyState}>
+                    <Utensils size={48} strokeWidth={1.5} className={styles.emptyIconSvg} />
+                    <p className={styles.emptyText}>İlan bulunamadı</p>
+                    <p className={styles.emptySubtext}>Filtrelerinizi ayarlamayı deneyin veya daha sonra tekrar kontrol edin.</p>
+                </div>
+            ) : (
+                <div className={styles.donationGrid}>
+                    {products.map((product) => (
+                        <DonationCard
+                            key={product.id}
+                            product={product}
+                            onRequestSuccess={() => fetchProducts()}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
+

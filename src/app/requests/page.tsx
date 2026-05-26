@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import styles from './requests.module.css';
 import { DonationRequest, RequestStatus } from '@/types';
 import { requestService } from '@/services/requestService';
+import { reviewService } from '@/services/reviewService';
 import { useAuth } from '@/contexts/AuthContext';
 
 const formatDate = (dateStr?: string) => {
@@ -31,6 +32,12 @@ export default function RequestsPage() {
     const [requests, setRequests] = useState<DonationRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>(isDonor ? 'incoming' : 'outgoing');
+
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [reviewRequest, setReviewRequest] = useState<DonationRequest | null>(null);
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState('');
+    const [submittingReview, setSubmittingReview] = useState(false);
 
     const fetchRequests = useCallback(async () => {
         setLoading(true);
@@ -80,6 +87,29 @@ export default function RequestsPage() {
             fetchRequests();
         } catch (error) {
             console.error('Failed to complete request:', error);
+        }
+    };
+
+    const handleOpenReview = (request: DonationRequest) => {
+        setReviewRequest(request);
+        setRating(5);
+        setComment('');
+        setReviewModalOpen(true);
+    };
+
+    const handleSubmitReview = async () => {
+        if (!reviewRequest) return;
+        setSubmittingReview(true);
+        try {
+            await reviewService.createReview(reviewRequest.id, { rating, comment });
+            setReviewModalOpen(false);
+            setReviewRequest(null);
+            alert('Review submitted successfully!');
+        } catch (error) {
+            console.error('Failed to submit review:', error);
+            alert('Failed to submit review. You may have already reviewed this.');
+        } finally {
+            setSubmittingReview(false);
         }
     };
 
@@ -200,8 +230,56 @@ export default function RequestsPage() {
                                     </button>
                                 </div>
                             )}
+
+                            {activeTab === 'outgoing' && request.status === RequestStatus.COMPLETED && (
+                                <div className={styles.actions}>
+                                    <button
+                                        className={styles.reviewBtn}
+                                        onClick={() => handleOpenReview(request)}
+                                    >
+                                        ⭐ Review Donor
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Review Modal */}
+            {reviewModalOpen && (
+                <div className={styles.modalOverlay} onClick={() => setReviewModalOpen(false)}>
+                    <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2 className={styles.modalTitle}>Rate your experience</h2>
+                            <button className={styles.modalClose} onClick={() => setReviewModalOpen(false)}>×</button>
+                        </div>
+                        <div className={styles.starRating}>
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                    key={star}
+                                    className={star <= rating ? styles.starActive : styles.star}
+                                    onClick={() => setRating(star)}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <textarea
+                            className={styles.reviewTextarea}
+                            placeholder="Add a comment (optional)..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            maxLength={500}
+                        />
+                        <button
+                            className={styles.submitReviewBtn}
+                            onClick={handleSubmitReview}
+                            disabled={submittingReview}
+                        >
+                            {submittingReview ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

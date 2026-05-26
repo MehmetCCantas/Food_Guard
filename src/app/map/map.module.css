@@ -3,11 +3,16 @@
    ========================================== */
 
 .pageTitle {
-    font-size: 1.75rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
     font-weight: 800;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--text-primary), var(--primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeIn var(--transition-slow) ease-out forwards;
 }
 
 /* ---- Layout ---- */
@@ -25,8 +30,14 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--glass-border);
     background: var(--bg-card);
+    animation: scaleIn var(--transition-slow) ease-out forwards;
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .mapTypeToggle {
@@ -99,19 +110,27 @@
 
 /* ---- Filter Section ---- */
 .filterSection {
-    background: var(--bg-card);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
     border-radius: var(--radius-lg);
     padding: 20px;
     box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--glass-border);
+    animation: slideLeft var(--transition-slow) ease-out forwards;
+}
+
+@keyframes slideLeft {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .filterTitle {
-    font-size: 0.85rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-primary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     margin-bottom: 16px;
 }
 
@@ -226,19 +245,23 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--bg-card);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
     border-radius: var(--radius-lg);
     padding: 20px;
     box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--glass-border);
+    animation: slideLeft var(--transition-slow) ease-out 0.1s forwards;
+    opacity: 0;
 }
 
 .listingsTitle {
-    font-size: 0.8rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-primary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     margin-bottom: 12px;
     padding: 0 2px;
 }

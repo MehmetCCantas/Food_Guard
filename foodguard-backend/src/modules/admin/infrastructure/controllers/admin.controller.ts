@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Inject,
   Param,
   ParseUUIDPipe,
@@ -31,6 +32,14 @@ export class AdminController {
     @Inject(IAdminService)
     private readonly adminService: IAdminService,
   ) {}
+
+  @Get('/users')
+  @ApiOperation({ summary: 'Lists all users (Admin only)' })
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getAllUsers(): Promise<UserResponseDto[]> {
+    const users = await this.adminService.getAllUsers();
+    return users.map((u) => new UserResponseDto(u));
+  }
 
   @Patch('/users/:userId/verify')
   @ApiOperation({ summary: 'Verifies an organizational user (Admin only)' })

@@ -112,7 +112,7 @@ export class ProductController {
   @ApiOperation({
     summary: 'Lists available food listings nearby (Recipient only)',
   })
-  @Roles(UserRole.INDIVIDUAL_RECIPIENT, UserRole.ORGANIZATIONAL_RECIPIENT, UserRole.DONOR)
+  @Roles(UserRole.INDIVIDUAL_RECIPIENT, UserRole.ORGANIZATIONAL_RECIPIENT, UserRole.DONOR, UserRole.ADMIN)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)

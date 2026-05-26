@@ -84,9 +84,10 @@ export const chatService = {
                 id: dto.recipientId,
                 productId: dto.productId,
                 updatedAt: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
                 unreadCount: 0,
                 participants: [
-                    { id: dto.recipientId, fullName: finalName || 'Partner User', avatarUrl: '' }
+                    { id: dto.recipientId, fullName: finalName || 'Partner User', avatarUrl: '' } as any
                 ]
             };
             saveLocalConversation(newConv);

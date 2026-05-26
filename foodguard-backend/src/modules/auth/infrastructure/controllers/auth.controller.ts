@@ -12,8 +12,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IAuthService } from '../../application/ports/in/auth.in-ports';
 import { LoginDto } from '../dtos/login.dto';
-import { ForgotPasswordDto } from '../dtos/forgot-password.dto'; // <-- YENİ IMPORT
-import { ResetPasswordDto } from '../dtos/reset-password.dto'; // <-- YENİ IMPORT
+import { ForgotPasswordDto } from '../dtos/forgot-password.dto';
+import { ResetPasswordDto } from '../dtos/reset-password.dto';
+import { ChangePasswordDto } from '../dtos/change-password.dto';
+import { VerifyEmailDto } from '../dtos/verify-email.dto';
+import { VerifyPhoneDto } from '../dtos/verify-phone.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
 import { User } from '../../../users/domain/entities/user.entity';
@@ -65,10 +68,70 @@ export class AuthController {
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Resets the password using a token' })
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async resetPassword(
-    @Body(ValidationPipe) dto: ResetPasswordDto,
-  ): Promise<void> {
-    return this.authService.resetPassword(dto);
+    @Body(ValidationPipe) resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    await this.authService.resetPassword(resetPasswordDto);
+    return { message: 'Password has been reset successfully' };
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Changes the password for a logged-in user' })
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Req() req: { user: User },
+    @Body(ValidationPipe) changePasswordDto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    await this.authService.changePassword(req.user.id, changePasswordDto);
+    return { message: 'Password changed successfully' };
+  }
+
+  @Post('send-verification-email')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Sends a 6-digit verification code to the logged-in user email' })
+  @HttpCode(HttpStatus.OK)
+  async sendVerificationEmail(@Req() req: { user: User }): Promise<{ message: string }> {
+    await this.authService.sendVerificationEmail(req.user.id);
+    return { message: 'Verification code sent' };
+  }
+
+  @Post('verify-email')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Verifies the users email with the 6-digit code' })
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @Req() req: { user: User },
+    @Body(ValidationPipe) dto: VerifyEmailDto,
+  ): Promise<{ message: string }> {
+    await this.authService.verifyEmail(req.user.id, dto.code);
+    return { message: 'Email verified successfully' };
+  }
+
+  @Post('verify-phone')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Verifies the users phone using Firebase ID token' })
+  @HttpCode(HttpStatus.OK)
+  async verifyPhone(
+    @Req() req: { user: User },
+    @Body(ValidationPipe) dto: VerifyPhoneDto,
+  ): Promise<{ message: string }> {
+    await this.authService.verifyPhone(req.user.id, dto.idToken);
+    return { message: 'Phone verified successfully' };
+  }
+
+  @Post('send-phone-verification')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Sends a mock SMS code to the user' })
+  @HttpCode(HttpStatus.OK)
+  async sendPhoneVerification(@Req() req: { user: User }): Promise<{ message: string }> {
+    await this.authService.sendPhoneVerification(req.user.id);
+    return { message: 'Phone verification code sent' };
   }
 }

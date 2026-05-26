@@ -18,7 +18,7 @@ export default function AdminPage() {
 
     const fetchUsers = useCallback(async () => {
         try {
-            const data = await apiClient.get<User[]>('/users');
+            const data = await apiClient.get<User[]>('/admin/users');
             setUsers(Array.isArray(data) ? data : []);
         } catch {
             console.warn('Could not fetch users (admin endpoint may not exist yet)');
@@ -43,7 +43,7 @@ export default function AdminPage() {
 
     const fetchRequests = useCallback(async () => {
         try {
-            const data = await apiClient.get<DonationRequest[]>('/requests');
+            const data = await apiClient.get<DonationRequest[]>('/requests/incoming');
             setRequests(Array.isArray(data) ? data : []);
         } catch {
             console.warn('Could not fetch requests');

@@ -31,6 +31,10 @@ export interface User {
     city?: string;
     district?: string;
     status: VerificationStatus;
+    isEmailVerified?: boolean;
+    isPhoneVerified?: boolean;
+    ratingScore?: number;
+    ratingCount?: number;
     createdAt?: string;
     updatedAt?: string;
 }

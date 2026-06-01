@@ -267,3 +267,135 @@
         grid-column: span 1;
     }
 }
+
+/* ---- Login Guard ---- */
+.loginGuard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 40px 24px;
+}
+
+.loginGuardCard {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 52px 44px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: guardFadeUp 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.loginGuardCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+}
+
+@keyframes guardFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loginGuardIcon {
+    font-size: 3.5rem;
+    margin-bottom: 18px;
+    line-height: 1;
+    display: block;
+}
+
+.loginGuardTitle {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.loginGuardDesc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.loginGuardActions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.loginGuardBtn {
+    flex: 1;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(220, 76, 76, 0.25);
+}
+
+.loginGuardBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(220, 76, 76, 0.35);
+}
+
+.loginGuardBtnSecondary {
+    flex: 1;
+    padding: 13px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loginGuardBtnSecondary:hover {
+    background: var(--bg-main);
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.loginGuardNote {
+    font-size: 0.83rem;
+    color: var(--text-light);
+}
+
+.loginGuardLink {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.loginGuardLink:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+}

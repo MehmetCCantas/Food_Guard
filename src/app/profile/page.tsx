@@ -74,14 +74,32 @@ export default function ProfilePage() {
 
     if (!user) {
         return (
-            <div>
-                <h1 className={styles.pageTitle}>My Profile</h1>
-                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
-                    Please log in to view your profile.
+            <div className={styles.loginGuard}>
+                <div className={styles.loginGuardCard}>
+                    <div className={styles.loginGuardIcon}>🔐</div>
+                    <h1 className={styles.loginGuardTitle}>Profil Sayfası</h1>
+                    <p className={styles.loginGuardDesc}>
+                        Kişisel bilgilerinizi görüntülemek ve düzenlemek için giriş yapmanız gerekiyor.
+                    </p>
+                    <div className={styles.loginGuardActions}>
+                        <a href="/login" className={styles.loginGuardBtn}>
+                            Giriş Yap
+                        </a>
+                        <a href="/register" className={styles.loginGuardBtnSecondary}>
+                            Hesap Oluştur
+                        </a>
+                    </div>
+                    <p className={styles.loginGuardNote}>
+                        Hesabınız yok mu?{' '}
+                        <a href="/register" className={styles.loginGuardLink}>
+                            Ücretsiz kayıt ol →
+                        </a>
+                    </p>
                 </div>
             </div>
         );
     }
+
 
     return (
         <div>

@@ -46,5 +46,6 @@ These features are currently simulated (MOCK) and need to be connected to real t
 - [ ] **Typography:** Integrate a modern, clean web font (e.g., Inter, Outfit, or Plus Jakarta Sans) with proper hierarchy and font weights.
 - [ ] **Color Palette & Depth:** Move away from basic flat colors. Implement a cohesive, rich color system. Use subtle shadows (elevation) and soft gradients or glassmorphism.
 - [ ] **Micro-animations & Interactions:** Add smooth CSS transitions on hover, active states, and page navigation. Use *Skeleton Loading* instead of basic spinners for data fetching.
+- [x] **Dark Mode Toggle:** Implement a premium, smooth, accessible Dark Mode theme toggle with local storage persistence and system preference synchronization.
 - [ ] **Spacing & Layout Consistency:** Ensure uniform padding/margins across all components. Let elements "breathe".
 - [ ] **High-Quality Assets:** Use professional, consistent placeholder images for empty states or default avatars.

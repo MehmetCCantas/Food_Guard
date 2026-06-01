@@ -72,6 +72,57 @@
   --transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+html[data-theme='dark'] {
+  /* Primary Colors - Lighter Terracotta Gradient Base for accessibility */
+  --primary: #E26D5C;
+  --primary-dark: #B84B35;
+  --primary-light: #FFA593;
+  --primary-hover: #EB856F;
+  --primary-glow: rgba(226, 109, 92, 0.2);
+  
+  /* Accent Colors - Elegant Emerald Sage & Fresh Gold */
+  --accent: #3D7A5D;
+  --accent-light: #4D9A7D;
+  --accent-hover: #2A5C43;
+  --accent-glow: rgba(61, 122, 93, 0.15);
+  --warning: #FBBF24;
+  --success: #34D399;
+  
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, #E26D5C 0%, #B84B35 100%);
+  --grad-accent: linear-gradient(135deg, #3D7A5D 0%, #1E4631 100%);
+  --grad-warm: linear-gradient(135deg, #181413 0%, #1E1A19 100%);
+  --grad-glass: linear-gradient(135deg, rgba(30, 26, 25, 0.75) 0%, rgba(30, 26, 25, 0.55) 100%);
+
+  /* Neutrals - High Premium Dark Greys */
+  --bg-main: #13100F;
+  --bg-card: #1C1817;
+  --bg-sidebar: rgba(28, 24, 23, 0.5);
+  --bg-navbar: rgba(28, 24, 23, 0.6);
+
+  /* Text - High Contrast Earthy Off-white */
+  --text-primary: #FAF6F5;
+  --text-secondary: #C3B9B6;
+  --text-light: #8A7E7A;
+  --text-white: #FFFFFF;
+
+  /* Borders - Soft & Subtle Dark */
+  --border-light: rgba(56, 49, 47, 0.6);
+  --border-medium: #38312F;
+  --border-glow: rgba(226, 109, 92, 0.3);
+
+  /* Shadows - Adjusted for Dark Mode (Deep Charcoal Shadows) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 10px 30px -4px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 50px -12px rgba(0, 0, 0, 0.65);
+  --shadow-card: 0 16px 40px -6px rgba(0, 0, 0, 0.45);
+  --shadow-premium: 0 20px 40px -10px rgba(226, 109, 92, 0.15);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(28, 24, 23, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.06);
+}
+
 *,
 *::before,
 *::after {

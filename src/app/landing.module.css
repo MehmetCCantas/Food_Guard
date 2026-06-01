@@ -231,6 +231,49 @@
     transform: translateY(-2px);
 }
 
+.heroGuestWrap {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+    animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+.ctaGuest {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    position: relative;
+    letter-spacing: 0.2px;
+}
+
+.ctaGuest::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 12px;
+    right: 12px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+}
+
+.ctaGuest:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ctaGuest:hover::after {
+    transform: scaleX(1);
+}
+
 /* ---- Stats Bar ---- */
 
 .statsBar {

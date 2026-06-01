@@ -66,6 +66,11 @@ export default function LandingPage() {
                             I Have an Account
                         </Link>
                     </div>
+                    <div className={styles.heroGuestWrap}>
+                        <Link href="/dashboard" className={styles.ctaGuest}>
+                            👀 Giriş yapmadan keşfet
+                        </Link>
+                    </div>
                 </div>
             </section>
 

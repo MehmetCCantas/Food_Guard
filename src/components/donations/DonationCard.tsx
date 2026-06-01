@@ -23,7 +23,7 @@ const categoryLabels: Record<string, string> = {
 };
 
 export default function DonationCard({ product, onRequestSuccess }: DonationCardProps) {
-    const { user, isRecipient } = useAuth();
+    const { user, isRecipient, isLoggedIn } = useAuth();
     const router = useRouter();
     const [requesting, setRequesting] = useState(false);
     const [requested, setRequested] = useState(() => {
@@ -37,10 +37,15 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
         return false;
     });
     const [messaging, setMessaging] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const isOwnListing = product.donorId === user?.id;
 
     const handleRequest = async () => {
+        if (!isLoggedIn) {
+            setShowLoginModal(true);
+            return;
+        }
         setRequesting(true);
         try {
             await requestService.createRequest(product.id, { message: 'I would like to request this food.' });
@@ -57,6 +62,10 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
     };
 
     const handleMessage = async () => {
+        if (!isLoggedIn) {
+            setShowLoginModal(true);
+            return;
+        }
         if (!product.donorId) return;
         setMessaging(true);
         try {
@@ -79,6 +88,45 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
 
     return (
         <div className={styles.card}>
+            {/* Login Modal Overlay */}
+            {showLoginModal && (
+                <div
+                    className={styles.loginModalOverlay}
+                    onClick={() => setShowLoginModal(false)}
+                >
+                    <div
+                        className={styles.loginModal}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className={styles.loginModalIcon}>🔐</div>
+                        <h3 className={styles.loginModalTitle}>Giriş Gerekiyor</h3>
+                        <p className={styles.loginModalDesc}>
+                            Bu işlemi gerçekleştirmek için hesabınıza giriş yapmanız gerekiyor.
+                        </p>
+                        <div className={styles.loginModalActions}>
+                            <button
+                                className={styles.loginModalBtn}
+                                onClick={() => router.push('/login')}
+                            >
+                                Giriş Yap
+                            </button>
+                            <button
+                                className={styles.loginModalBtnSecondary}
+                                onClick={() => router.push('/register')}
+                            >
+                                Kayıt Ol
+                            </button>
+                        </div>
+                        <button
+                            className={styles.loginModalClose}
+                            onClick={() => setShowLoginModal(false)}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className={styles.imageWrapper}>
                 <img
                     src={verifiedUrl}
@@ -109,8 +157,26 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
                     </div>
                 )}
                 <div className={styles.footer}>
+                    {/* Giriş yapılmamış misafir: butonlar görünür ama tıklayınca modal */}
+                    {!isLoggedIn && (
+                        <>
+                            <button
+                                className={styles.requestBtn}
+                                onClick={handleRequest}
+                            >
+                                🤝 Request
+                            </button>
+                            <button
+                                className={styles.messageBtn}
+                                onClick={handleMessage}
+                            >
+                                💬 Message
+                            </button>
+                        </>
+                    )}
+
                     {/* Alıcı ise: Request + Mesaj butonu */}
-                    {isRecipient && !isOwnListing && (
+                    {isLoggedIn && isRecipient && !isOwnListing && (
                         <>
                             {requested ? (
                                 <button className={styles.requestedBtn} disabled>
@@ -136,7 +202,7 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
                     )}
 
                     {/* If not the owner, show view-only tag */}
-                    {!isRecipient && !isOwnListing && (
+                    {isLoggedIn && !isRecipient && !isOwnListing && (
                         <span className={styles.viewOnlyTag}>👀 View Only</span>
                     )}
                 </div>

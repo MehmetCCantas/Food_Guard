@@ -7,6 +7,7 @@ import styles from './Navbar.module.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useChat } from '@/contexts/ChatContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { NotificationType } from '@/types';
 import { 
     Bell, 
@@ -23,7 +24,9 @@ import {
     LogOut,
     BellOff,
     ChevronDown,
-    Sparkles
+    Sparkles,
+    Sun,
+    Moon
 } from 'lucide-react';
 
 const notifIcons: Record<NotificationType, React.ComponentType<any>> = {
@@ -37,6 +40,7 @@ export default function Navbar() {
     const { user, isLoggedIn, isLoading, logout, isDonor, isRecipient } = useAuth();
     const { notifications, unreadCount, markAllRead, markRead } = useNotifications();
     const { totalUnread: chatUnread } = useChat();
+    const { theme, toggleTheme } = useTheme();
 
     const [showDropdown, setShowDropdown] = useState(false);
     const [showNotifPanel, setShowNotifPanel] = useState(false);
@@ -83,6 +87,19 @@ export default function Navbar() {
             </div>
 
             <div className={styles.navRight}>
+                <button
+                    className={styles.themeToggleBtn}
+                    onClick={toggleTheme}
+                    aria-label="Karanlık Modu Aç/Kapat"
+                    title={theme === 'dark' ? 'Açık Mod' : 'Karanlık Mod'}
+                >
+                    {theme === 'dark' ? (
+                        <Sun size={20} className={styles.themeIcon} strokeWidth={2.2} />
+                    ) : (
+                        <Moon size={20} className={styles.themeIcon} strokeWidth={2.2} />
+                    )}
+                </button>
+
                 {isLoading ? (
                     <div style={{ width: 100 }} />
                 ) : isLoggedIn && user ? (

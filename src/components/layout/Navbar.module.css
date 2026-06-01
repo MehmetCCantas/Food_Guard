@@ -542,3 +542,34 @@
     flex-shrink: 0;
     margin-top: 4px;
 }
+
+.themeToggleBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+
+.themeToggleBtn:hover {
+    background: var(--bg-main);
+    color: var(--primary);
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.themeIcon {
+    transition: transform var(--transition-normal);
+}
+
+.themeToggleBtn:hover .themeIcon {
+    transform: rotate(20deg);
+}

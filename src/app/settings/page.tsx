@@ -18,6 +18,7 @@ const roleLabels: Record<string, string> = {
 interface FormData {
     firstName: string;
     lastName: string;
+    email: string;
     phoneNumber: string;
     address: string;
 }
@@ -28,6 +29,7 @@ export default function SettingsPage() {
     const [form, setForm] = useState<FormData>({
         firstName: '',
         lastName: '',
+        email: '',
         phoneNumber: '',
         address: '',
     });
@@ -38,9 +40,12 @@ export default function SettingsPage() {
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+    // Doğrulama gereken alanları takip et
+    const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
+    const [phoneNeedsVerification, setPhoneNeedsVerification] = useState(false);
+
     const [verifyingEmail, setVerifyingEmail] = useState(false);
     const [verificationCode, setVerificationCode] = useState('');
-    const [verificationSent, setVerificationSent] = useState(false);
     const [verificationLoading, setVerificationLoading] = useState(false);
 
     const [verifyingPhone, setVerifyingPhone] = useState(false);
@@ -60,9 +65,13 @@ export default function SettingsPage() {
             setForm({
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
+                email: user.email || '',
                 phoneNumber: user.phoneNumber || '',
                 address: user.address || '',
             });
+            // Kullanıcı verisi yenilenince doğrulama uyarılarını temizle
+            setEmailNeedsVerification(false);
+            setPhoneNeedsVerification(false);
         }
     }, [user]);
 
@@ -74,18 +83,49 @@ export default function SettingsPage() {
         setSaving(true);
         setError(null);
         setSuccess(false);
+
+        const emailChanged = form.email.trim() !== (user?.email || '');
+        const phoneChanged = form.phoneNumber.trim() !== (user?.phoneNumber || '');
+
         try {
-            await userService.updateProfile({
+            const payload: Partial<User> = {
                 firstName: form.firstName,
                 lastName: form.lastName,
                 phoneNumber: form.phoneNumber,
                 address: form.address,
-            });
+            };
+            if (emailChanged) payload.email = form.email.trim();
+
+            await userService.updateProfile(payload);
             await refreshUser();
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
-        } catch (err) {
-            setError('Failed to save. Please try again.');
+
+            // Değişen alanlar için doğrulama akışını otomatik tetikle
+            if (emailChanged) {
+                setEmailNeedsVerification(true);
+                try {
+                    await authService.sendVerificationEmail();
+                    setVerifyingEmail(true);
+                } catch (e) {
+                    console.warn('Email verification send failed:', e);
+                }
+            }
+            if (phoneChanged && form.phoneNumber.length >= 10) {
+                setPhoneNeedsVerification(true);
+                try {
+                    await authService.sendPhoneVerification();
+                    setVerifyingPhone(true);
+                } catch (e) {
+                    console.warn('Phone verification send failed:', e);
+                }
+            }
+        } catch (err: any) {
+            if (emailChanged && (err?.response?.status === 400 || err?.response?.status === 422)) {
+                setError('E-posta adresi değiştirilemedi. Backend bu işlemi desteklemiyor olabilir.');
+            } else {
+                setError('Failed to save. Please try again.');
+            }
         } finally {
             setSaving(false);
         }
@@ -104,21 +144,21 @@ export default function SettingsPage() {
         }
     };
 
-    const handleSendVerification = async () => {
+    // Email: yeniden kod gönder
+    const handleResendEmailVerification = async () => {
         setVerificationLoading(true);
         setError(null);
         try {
             await authService.sendVerificationEmail();
-            setVerificationSent(true);
             setVerifyingEmail(true);
-            alert('Verification code sent! (Check backend console for the mock code)');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to send verification email.');
+            setError(err.response?.data?.message || 'Doğrulama e-postası gönderilemedi.');
         } finally {
             setVerificationLoading(false);
         }
     };
 
+    // Email: kodu onayla
     const handleVerifyCode = async () => {
         if (verificationCode.length !== 6) return;
         setVerificationLoading(true);
@@ -127,20 +167,21 @@ export default function SettingsPage() {
             await authService.verifyEmail(verificationCode);
             await refreshUser();
             setVerifyingEmail(false);
-            setVerificationSent(false);
+            setEmailNeedsVerification(false);
             setVerificationCode('');
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Invalid or expired verification code.');
+            setError(err.response?.data?.message || 'Geçersiz veya süresi dolmuş doğrulama kodu.');
         } finally {
             setVerificationLoading(false);
         }
     };
 
-    const handleSendPhoneVerification = async () => {
+    // Telefon: yeniden SMS gönder
+    const handleResendPhoneVerification = async () => {
         if (!form.phoneNumber || form.phoneNumber.length < 10) {
-            setError("Please enter a valid phone number (e.g. +905...) and save changes first.");
+            setError('Lütfen geçerli bir telefon numarası girin (+905...)');
             return;
         }
         setPhoneVerificationLoading(true);
@@ -148,15 +189,14 @@ export default function SettingsPage() {
         try {
             await authService.sendPhoneVerification();
             setVerifyingPhone(true);
-            alert('MOCK SMS Verification code sent! (Check backend console)');
         } catch (err: any) {
-            console.error(err);
-            setError('Failed to send SMS: ' + (err.response?.data?.message || err.message));
+            setError('SMS gönderilemedi: ' + (err.response?.data?.message || err.message));
         } finally {
             setPhoneVerificationLoading(false);
         }
     };
 
+    // Telefon: kodu onayla
     const handleVerifyPhoneCode = async () => {
         if (phoneVerificationCode.length < 6) return;
         setPhoneVerificationLoading(true);
@@ -164,13 +204,13 @@ export default function SettingsPage() {
         try {
             await authService.verifyPhone(phoneVerificationCode);
             await refreshUser();
-            
             setVerifyingPhone(false);
+            setPhoneNeedsVerification(false);
             setPhoneVerificationCode('');
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Invalid SMS code or verification failed.');
+            setError(err.response?.data?.message || 'Geçersiz SMS kodu veya doğrulama başarısız.');
         } finally {
             setPhoneVerificationLoading(false);
         }
@@ -253,117 +293,6 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* TODO(Verification): Uncomment and complete email/phone verification flow when the app is ready for production.
-                    <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>🛡️ Security & Verification</h2>
-                        <div className={styles.verificationBox}>
-                            <div className={styles.verificationHeader}>
-                                <div>
-                                    <h3 className={styles.verificationTitle}>Email Verification</h3>
-                                    <p className={styles.verificationDesc}>
-                                        Verify your email to build trust in the community.
-                                    </p>
-                                </div>
-                                {user.isEmailVerified ? (
-                                    <div className={styles.badgeVerified}>✅ Verified</div>
-                                ) : (
-                                    <div className={styles.badgeUnverified}>❌ Unverified</div>
-                                )}
-                            </div>
-
-                            {!user.isEmailVerified && (
-                                <div className={styles.verificationAction}>
-                                    {!verifyingEmail ? (
-                                        <button 
-                                            className={styles.secondaryBtn} 
-                                            onClick={handleSendVerification}
-                                            disabled={verificationLoading}
-                                        >
-                                            {verificationLoading ? 'Sending...' : 'Verify My Email'}
-                                        </button>
-                                    ) : (
-                                        <div className={styles.verificationInputGroup}>
-                                            <input 
-                                                type="text" 
-                                                maxLength={6}
-                                                placeholder="Enter 6-digit code"
-                                                className={styles.input}
-                                                value={verificationCode}
-                                                onChange={(e) => setVerificationCode(e.target.value)}
-                                            />
-                                            <button 
-                                                className={styles.saveBtn}
-                                                onClick={handleVerifyCode}
-                                                disabled={verificationLoading || verificationCode.length !== 6}
-                                            >
-                                                {verificationLoading ? 'Verifying...' : 'Submit Code'}
-                                            </button>
-                                            <button 
-                                                className={styles.cancelBtn}
-                                                onClick={() => setVerifyingEmail(false)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            <div className={styles.verificationHeader} style={{ marginTop: '24px' }}>
-                                <div>
-                                    <h3 className={styles.verificationTitle}>Phone Verification</h3>
-                                    <p className={styles.verificationDesc}>
-                                        Verify your phone number for secure pickups.
-                                    </p>
-                                </div>
-                                {user.isPhoneVerified ? (
-                                    <div className={styles.badgeVerified}>✅ Verified</div>
-                                ) : (
-                                    <div className={styles.badgeUnverified}>❌ Unverified</div>
-                                )}
-                            </div>
-
-                            {!user.isPhoneVerified && (
-                                <div className={styles.verificationAction}>
-                                    {!verifyingPhone ? (
-                                        <button 
-                                            className={styles.secondaryBtn} 
-                                            onClick={handleSendPhoneVerification}
-                                            disabled={phoneVerificationLoading}
-                                        >
-                                            {phoneVerificationLoading ? 'Sending SMS...' : 'Verify My Phone'}
-                                        </button>
-                                    ) : (
-                                        <div className={styles.verificationInputGroup}>
-                                            <input 
-                                                type="text" 
-                                                maxLength={6}
-                                                placeholder="Enter 6-digit SMS code"
-                                                className={styles.input}
-                                                value={phoneVerificationCode}
-                                                onChange={(e) => setPhoneVerificationCode(e.target.value)}
-                                            />
-                                            <button 
-                                                className={styles.saveBtn}
-                                                onClick={handleVerifyPhoneCode}
-                                                disabled={phoneVerificationLoading || phoneVerificationCode.length < 6}
-                                            >
-                                                {phoneVerificationLoading ? 'Verifying...' : 'Submit Code'}
-                                            </button>
-                                            <button 
-                                                className={styles.cancelBtn}
-                                                onClick={() => setVerifyingPhone(false)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </section>
-                    */}
-
                     {/* Personal Info */}
                     <section className={styles.section}>
                         <h2 className={styles.sectionTitle}>👤 Personal Information</h2>
@@ -390,19 +319,82 @@ export default function SettingsPage() {
                             </div>
                         </div>
 
+                        {/* Email — artık düzenlenebilir */}
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>Email</label>
+                            <label className={styles.label}>
+                                Email
+                                {emailNeedsVerification && (
+                                    <span className={styles.pendingBadge}>⚠️ Doğrulama gerekiyor</span>
+                                )}
+                            </label>
                             <input
-                                className={`${styles.input} ${styles.inputDisabled}`}
+                                className={styles.input}
                                 type="email"
-                                value={user.email}
-                                disabled
+                                value={form.email}
+                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                placeholder="E-posta adresiniz"
                             />
-                            <span className={styles.fieldHint}>Email cannot be changed</span>
+                            <span className={styles.fieldHint}>Değiştirirseniz yeni adresinizi doğrulamanız gerekecek.</span>
                         </div>
 
+                        {/* Email doğrulama paneli — sadece gerektiğinde açılır */}
+                        {emailNeedsVerification && (
+                            <div className={styles.verificationPanel}>
+                                <div className={styles.verificationPanelHeader}>
+                                    <span className={styles.verificationPanelIcon}>📧</span>
+                                    <div>
+                                        <div className={styles.verificationPanelTitle}>E-posta Doğrulaması</div>
+                                        <div className={styles.verificationPanelDesc}>
+                                            {verifyingEmail
+                                                ? 'E-postanıza gönderilen 6 haneli kodu girin.'
+                                                : 'Yeni e-posta adresinize doğrulama kodu gönderildi.'}
+                                        </div>
+                                    </div>
+                                </div>
+                                {verifyingEmail ? (
+                                    <div className={styles.verificationInputGroup}>
+                                        <input
+                                            type="text"
+                                            maxLength={6}
+                                            placeholder="6 haneli kod"
+                                            className={styles.input}
+                                            value={verificationCode}
+                                            onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                                        />
+                                        <button
+                                            className={styles.saveBtn}
+                                            onClick={handleVerifyCode}
+                                            disabled={verificationLoading || verificationCode.length !== 6}
+                                        >
+                                            {verificationLoading ? '⏳ Doğrulanıyor...' : '✓ Kodu Onayla'}
+                                        </button>
+                                        <button
+                                            className={styles.cancelBtn}
+                                            onClick={() => setVerifyingEmail(false)}
+                                        >
+                                            İptal
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className={styles.secondaryBtn}
+                                        onClick={handleResendEmailVerification}
+                                        disabled={verificationLoading}
+                                    >
+                                        {verificationLoading ? '⏳ Gönderiliyor...' : '📨 Kodu Tekrar Gönder'}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Telefon */}
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>Phone</label>
+                            <label className={styles.label}>
+                                Phone
+                                {phoneNeedsVerification && (
+                                    <span className={styles.pendingBadge}>⚠️ Doğrulama gerekiyor</span>
+                                )}
+                            </label>
                             <input
                                 className={styles.input}
                                 type="tel"
@@ -411,6 +403,56 @@ export default function SettingsPage() {
                                 placeholder="+90 5XX XXX XX XX"
                             />
                         </div>
+
+                        {/* Telefon doğrulama paneli — sadece gerektiğinde açılır */}
+                        {phoneNeedsVerification && (
+                            <div className={styles.verificationPanel}>
+                                <div className={styles.verificationPanelHeader}>
+                                    <span className={styles.verificationPanelIcon}>📱</span>
+                                    <div>
+                                        <div className={styles.verificationPanelTitle}>Telefon Doğrulaması</div>
+                                        <div className={styles.verificationPanelDesc}>
+                                            {verifyingPhone
+                                                ? 'Telefonunuza gönderilen 6 haneli SMS kodunu girin.'
+                                                : 'Yeni telefon numaranıza SMS kodu gönderildi.'}
+                                        </div>
+                                    </div>
+                                </div>
+                                {verifyingPhone ? (
+                                    <div className={styles.verificationInputGroup}>
+                                        <input
+                                            type="text"
+                                            maxLength={6}
+                                            placeholder="6 haneli SMS kodu"
+                                            className={styles.input}
+                                            value={phoneVerificationCode}
+                                            onChange={(e) => setPhoneVerificationCode(e.target.value.replace(/\D/g, ''))}
+                                        />
+                                        <button
+                                            className={styles.saveBtn}
+                                            onClick={handleVerifyPhoneCode}
+                                            disabled={phoneVerificationLoading || phoneVerificationCode.length < 6}
+                                        >
+                                            {phoneVerificationLoading ? '⏳ Doğrulanıyor...' : '✓ Kodu Onayla'}
+                                        </button>
+                                        <button
+                                            className={styles.cancelBtn}
+                                            onClick={() => setVerifyingPhone(false)}
+                                        >
+                                            İptal
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className={styles.secondaryBtn}
+                                        onClick={handleResendPhoneVerification}
+                                        disabled={phoneVerificationLoading}
+                                    >
+                                        {phoneVerificationLoading ? '⏳ Gönderiliyor...' : '📨 SMS\'i Tekrar Gönder'}
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </section>
 
                     {/* Address */}

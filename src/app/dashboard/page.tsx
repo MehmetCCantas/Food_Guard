@@ -6,7 +6,9 @@ import DonationCard from '@/components/donations/DonationCard';
 import DonationFilters from '@/components/donations/DonationFilters';
 import { Product, ProductFilters } from '@/types';
 import { productService } from '@/services/productService';
+import { requestService } from '@/services/requestService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChat } from '@/contexts/ChatContext';
 import { 
     Package, 
     Store, 
@@ -20,9 +22,7 @@ export default function DashboardPage() {
     const [filters, setFilters] = useState<ProductFilters>({});
     const [loading, setLoading] = useState(true);
     const { isDonor, user } = useAuth();
-    
-    // Additional hooks for realistic counts
-    const { totalUnread } = require('@/contexts/ChatContext').useChat();
+    const { totalUnread } = useChat();
     const [requestCount, setRequestCount] = useState(0);
     
     const fetchProducts = useCallback(async () => {
@@ -40,13 +40,16 @@ export default function DashboardPage() {
 
     const fetchDashboardData = useCallback(async () => {
         try {
-            const { requestService } = await import('@/services/requestService');
-            const reqs = await requestService.getMyRequests(1, 100);
+            // Donor: gelen talepleri say, Recipient: kendi taleplerini say
+            const reqs = isDonor
+                ? await requestService.getIncomingRequests(1, 100)
+                : await requestService.getMyRequests(1, 100);
             setRequestCount(reqs.data?.length || 0);
         } catch (error) {
             console.error('Failed to fetch request counts:', error);
         }
-    }, []);
+    }, [isDonor]);
+
 
     useEffect(() => {
         fetchProducts();

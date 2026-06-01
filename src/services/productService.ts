@@ -5,9 +5,6 @@
 import { apiClient } from './apiClient';
 import { Product, ProductFilters, PaginatedResponse, ProductCategory } from '@/types';
 
-// Mock mode helper: Check if backend is available or force mock
-const USE_MOCK = true; // Set to false to try backend first
-
 /**
  * Get local products from localStorage
  */
@@ -32,45 +29,34 @@ export const productService = {
      * Fallback to LocalStorage if backend fails or in mock mode
      */
     async getNearbyProducts(filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
-        let backendData: Product[] = [];
-        
         try {
             const params: Record<string, string> = {};
-            // Default to Istanbul center if no coordinates provided to prevent 400 Bad Request
             params.latitude = (filters?.latitude ?? 41.0082).toString();
             params.longitude = (filters?.longitude ?? 28.9784).toString();
-            params.radiusKm = (filters?.radiusKm ?? 50).toString(); // Default 50km
-            
+            params.radiusKm = (filters?.radiusKm ?? 50).toString();
+
             if (filters?.category && filters.category !== 'all') params.category = filters.category;
             if (filters?.page) params.page = filters.page.toString();
             if (filters?.limit) params.limit = filters.limit.toString();
 
-            const response = await apiClient.get<PaginatedResponse<Product>>('/products/nearby', params);
-            backendData = response.data || [];
+            return await apiClient.get<PaginatedResponse<Product>>('/products/nearby', params);
         } catch (error) {
-            console.warn('Backend connection failed, using local mock data only.');
-        }
-
-        // Merge with local mock data
-        let localData = getLocalProducts();
-
-        // Apply filters locally for mock data
-        if (filters?.category && filters.category !== 'all') {
-            localData = localData.filter(p => p.category === filters.category);
-        }
-
-        // Merge checking for duplicates
-        const combined = [...localData.filter(l => !backendData.some(b => b.id === l.id)), ...backendData];
-
-        return {
-            data: combined,
-            meta: {
-                total: combined.length,
-                page: filters?.page || 1,
-                limit: filters?.limit || 10,
-                totalPages: 1
+            // Backend bağlı değilse localStorage mock verisine düş
+            console.warn('Backend connection failed, using local mock data.');
+            let localData = getLocalProducts();
+            if (filters?.category && filters.category !== 'all') {
+                localData = localData.filter(p => p.category === filters.category);
             }
-        };
+            return {
+                data: localData,
+                meta: {
+                    total: localData.length,
+                    page: filters?.page || 1,
+                    limit: filters?.limit || 10,
+                    totalPages: 1
+                }
+            };
+        }
     },
 
     async getMyProducts(): Promise<Product[]> {
@@ -129,14 +115,13 @@ export const productService = {
     },
 
     async deleteProduct(id: string): Promise<void> {
-        // Delete from local
-        const products = getLocalProducts().filter(p => p.id !== id);
-        localStorage.setItem('mock_products', JSON.stringify(products));
-        
         try {
             await apiClient.delete<void>(`/products/${id}`);
         } catch (error) {
-            console.warn('Could not delete from backend.');
+            // Backend bağlı değilse sadece local'dan sil
+            console.warn('Could not delete from backend, removing locally.');
+            const products = getLocalProducts().filter(p => p.id !== id);
+            localStorage.setItem('mock_products', JSON.stringify(products));
         }
     },
 };

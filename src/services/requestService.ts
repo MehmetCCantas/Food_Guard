@@ -52,57 +52,46 @@ export const requestService = {
      * Benim taleplerim — GET /requests/my-requests
      */
     async getMyRequests(page = 1, limit = 20): Promise<PaginatedResponse<DonationRequest>> {
-        let backendData: DonationRequest[] = [];
         try {
-            const response = await apiClient.get<PaginatedResponse<DonationRequest>>('/requests/my-requests', {
+            return await apiClient.get<PaginatedResponse<DonationRequest>>('/requests/my-requests', {
                 page: page.toString(),
                 limit: limit.toString(),
             });
-            backendData = response.data || [];
         } catch (error) {
-            console.warn('Backend requests fetch failed, using local.');
+            // Backend bağlı değilse localStorage mock verisine düş
+            console.warn('Backend requests fetch failed, using local fallback.');
+            const localData = getLocalRequests();
+            return {
+                data: localData,
+                meta: { total: localData.length, page, limit, totalPages: 1 }
+            };
         }
-
-        const combined = [...getLocalRequests(), ...backendData];
-
-        return {
-            data: combined,
-            meta: {
-                total: combined.length,
-                page,
-                limit,
-                totalPages: 1
-            }
-        };
     },
 
     /**
      * Gelen talepler (Donor view) — GET /requests/incoming
      */
     async getIncomingRequests(page = 1, limit = 20): Promise<PaginatedResponse<DonationRequest>> {
-        let backendData: DonationRequest[] = [];
         try {
-            const response = await apiClient.get<PaginatedResponse<DonationRequest>>('/requests/incoming', {
+            return await apiClient.get<PaginatedResponse<DonationRequest>>('/requests/incoming', {
                 page: page.toString(),
                 limit: limit.toString(),
             });
-            backendData = response.data || [];
         } catch (error) {
-            console.warn('Backend incoming requests fetch failed.');
+            console.warn('Backend incoming requests fetch failed, using local fallback.');
             // Only return local mocks for now
             const localReqs = getLocalRequests();
-            backendData = localReqs.filter(r => r.status === RequestStatus.PENDING); // Basic fallback mock logic
+            const backendData = localReqs.filter(r => r.status === RequestStatus.PENDING); // Basic fallback mock logic
+            return {
+                data: backendData,
+                meta: {
+                    total: backendData.length,
+                    page,
+                    limit,
+                    totalPages: 1
+                }
+            };
         }
-
-        return {
-            data: backendData,
-            meta: {
-                total: backendData.length,
-                page,
-                limit,
-                totalPages: 1
-            }
-        };
     },
 
     /**
@@ -119,18 +108,17 @@ export const requestService = {
      * Talebi kabul et — PATCH /requests/:id/accept
      */
     async acceptRequest(requestId: string): Promise<void> {
-        // Mock update
-        const requests = getLocalRequests();
-        const req = requests.find(r => r.id === requestId);
-        if (req) {
-            req.status = RequestStatus.ACCEPTED;
-            localStorage.setItem('mock_requests', JSON.stringify(requests));
-        }
-
         try {
             await apiClient.patch<void>(`/requests/${requestId}/accept`);
         } catch (error) {
-            console.warn('Backend accept failed, updated locally.');
+            // Backend bağlı değilse local güncelle
+            console.warn('Backend accept failed, updating locally.');
+            const requests = getLocalRequests();
+            const req = requests.find(r => r.id === requestId);
+            if (req) {
+                req.status = RequestStatus.ACCEPTED;
+                localStorage.setItem('mock_requests', JSON.stringify(requests));
+            }
         }
     },
 
@@ -138,18 +126,17 @@ export const requestService = {
      * Talebi reddet — PATCH /requests/:id/reject
      */
     async rejectRequest(requestId: string): Promise<void> {
-        // Mock update
-        const requests = getLocalRequests();
-        const req = requests.find(r => r.id === requestId);
-        if (req) {
-            req.status = RequestStatus.REJECTED;
-            localStorage.setItem('mock_requests', JSON.stringify(requests));
-        }
-
         try {
             await apiClient.patch<void>(`/requests/${requestId}/reject`);
         } catch (error) {
-            console.warn('Backend reject failed, updated locally.');
+            // Backend bağlı değilse local güncelle
+            console.warn('Backend reject failed, updating locally.');
+            const requests = getLocalRequests();
+            const req = requests.find(r => r.id === requestId);
+            if (req) {
+                req.status = RequestStatus.REJECTED;
+                localStorage.setItem('mock_requests', JSON.stringify(requests));
+            }
         }
     },
 
@@ -157,18 +144,17 @@ export const requestService = {
      * Talebi tamamla — PATCH /requests/:id/complete
      */
     async completeRequest(requestId: string): Promise<void> {
-        // Mock update
-        const requests = getLocalRequests();
-        const req = requests.find(r => r.id === requestId);
-        if (req) {
-            req.status = RequestStatus.COMPLETED;
-            localStorage.setItem('mock_requests', JSON.stringify(requests));
-        }
-
         try {
             await apiClient.patch<void>(`/requests/${requestId}/complete`);
         } catch (error) {
-            console.warn('Backend complete failed, updated locally.');
+            // Backend bağlı değilse local güncelle
+            console.warn('Backend complete failed, updating locally.');
+            const requests = getLocalRequests();
+            const req = requests.find(r => r.id === requestId);
+            if (req) {
+                req.status = RequestStatus.COMPLETED;
+                localStorage.setItem('mock_requests', JSON.stringify(requests));
+            }
         }
     },
 };

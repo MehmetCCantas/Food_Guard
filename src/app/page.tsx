@@ -5,6 +5,22 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './landing.module.css';
+import { 
+    Utensils, 
+    Sprout, 
+    Rocket, 
+    Eye, 
+    UserPlus, 
+    Package, 
+    Handshake, 
+    Map, 
+    Bot, 
+    MessageSquare, 
+    BarChart3, 
+    Bell, 
+    Star, 
+    Heart 
+} from 'lucide-react';
 
 export default function LandingPage() {
     const { isLoggedIn, isLoading } = useAuth();
@@ -26,7 +42,7 @@ export default function LandingPage() {
             {/* ---- Navbar ---- */}
             <nav className={styles.nav}>
                 <div className={styles.navLogo}>
-                    <span className={styles.navLogoIcon}>🍽️</span>
+                    <Utensils size={24} className={styles.navLogoIcon} strokeWidth={2.5} />
                     <span>Food Guard</span>
                 </div>
                 <div className={styles.navActions}>
@@ -46,7 +62,8 @@ export default function LandingPage() {
 
                 <div className={styles.heroContent}>
                     <div className={styles.heroBadge}>
-                        🌱 Fighting Food Waste Together
+                        <Sprout size={16} strokeWidth={2.5} />
+                        <span>Fighting Food Waste Together</span>
                     </div>
                     <h1 className={styles.heroTitle}>
                         Share Surplus Food,{' '}
@@ -60,7 +77,8 @@ export default function LandingPage() {
                     </p>
                     <div className={styles.heroCta}>
                         <Link href="/register" className={styles.ctaPrimary}>
-                            🚀 Start Sharing
+                            <Rocket size={18} />
+                            <span>Start Sharing</span>
                         </Link>
                         <Link href="/login" className={styles.ctaSecondary}>
                             I Have an Account
@@ -68,7 +86,8 @@ export default function LandingPage() {
                     </div>
                     <div className={styles.heroGuestWrap}>
                         <Link href="/dashboard" className={styles.ctaGuest}>
-                            👀 Giriş yapmadan keşfet
+                            <Eye size={16} />
+                            <span>Giriş yapmadan keşfet</span>
                         </Link>
                     </div>
                 </div>
@@ -108,7 +127,9 @@ export default function LandingPage() {
                 <div className={styles.stepsGrid}>
                     <div className={styles.stepCard}>
                         <div className={styles.stepNumber}>1</div>
-                        <span className={styles.stepIcon}>📝</span>
+                        <span className={styles.stepIcon}>
+                            <UserPlus size={36} strokeWidth={2} />
+                        </span>
                         <h3 className={styles.stepTitle}>Create an Account</h3>
                         <p className={styles.stepDesc}>
                             Sign up as a donor or recipient. Restaurants, markets, and individuals 
@@ -118,7 +139,9 @@ export default function LandingPage() {
 
                     <div className={styles.stepCard}>
                         <div className={styles.stepNumber}>2</div>
-                        <span className={styles.stepIcon}>📦</span>
+                        <span className={styles.stepIcon}>
+                            <Package size={36} strokeWidth={2} />
+                        </span>
                         <h3 className={styles.stepTitle}>List or Browse Food</h3>
                         <p className={styles.stepDesc}>
                             Donors list surplus food with details, photos, and location. 
@@ -128,7 +151,9 @@ export default function LandingPage() {
 
                     <div className={styles.stepCard}>
                         <div className={styles.stepNumber}>3</div>
-                        <span className={styles.stepIcon}>🤝</span>
+                        <span className={styles.stepIcon}>
+                            <Handshake size={36} strokeWidth={2} />
+                        </span>
                         <h3 className={styles.stepTitle}>Connect & Share</h3>
                         <p className={styles.stepDesc}>
                             Request food, chat with donors, and arrange pickup. 
@@ -149,7 +174,9 @@ export default function LandingPage() {
 
                     <div className={styles.featureGrid}>
                         <div className={styles.featureCard}>
-                            <div className={styles.featureIcon}>🗺️</div>
+                            <div className={styles.featureIcon}>
+                                <Map size={24} strokeWidth={2} />
+                            </div>
                             <div className={styles.featureInfo}>
                                 <h3 className={styles.featureTitle}>Interactive Map</h3>
                                 <p className={styles.featureDesc}>
@@ -160,7 +187,9 @@ export default function LandingPage() {
                         </div>
 
                         <div className={styles.featureCard}>
-                            <div className={styles.featureIcon}>🤖</div>
+                            <div className={styles.featureIcon}>
+                                <Bot size={24} strokeWidth={2} />
+                            </div>
                             <div className={styles.featureInfo}>
                                 <h3 className={styles.featureTitle}>AI Food Safety</h3>
                                 <p className={styles.featureDesc}>
@@ -171,7 +200,9 @@ export default function LandingPage() {
                         </div>
 
                         <div className={styles.featureCard}>
-                            <div className={styles.featureIcon}>💬</div>
+                            <div className={styles.featureIcon}>
+                                <MessageSquare size={24} strokeWidth={2} />
+                            </div>
                             <div className={styles.featureInfo}>
                                 <h3 className={styles.featureTitle}>Real-time Chat</h3>
                                 <p className={styles.featureDesc}>
@@ -182,7 +213,9 @@ export default function LandingPage() {
                         </div>
 
                         <div className={styles.featureCard}>
-                            <div className={styles.featureIcon}>📊</div>
+                            <div className={styles.featureIcon}>
+                                <BarChart3 size={24} strokeWidth={2} />
+                            </div>
                             <div className={styles.featureInfo}>
                                 <h3 className={styles.featureTitle}>Impact Dashboard</h3>
                                 <p className={styles.featureDesc}>
@@ -193,7 +226,9 @@ export default function LandingPage() {
                         </div>
 
                         <div className={styles.featureCard}>
-                            <div className={styles.featureIcon}>🔔</div>
+                            <div className={styles.featureIcon}>
+                                <Bell size={24} strokeWidth={2} />
+                            </div>
                             <div className={styles.featureInfo}>
                                 <h3 className={styles.featureTitle}>Smart Notifications</h3>
                                 <p className={styles.featureDesc}>
@@ -204,7 +239,9 @@ export default function LandingPage() {
                         </div>
 
                         <div className={styles.featureCard}>
-                            <div className={styles.featureIcon}>⭐</div>
+                            <div className={styles.featureIcon}>
+                                <Star size={24} strokeWidth={2} />
+                            </div>
                             <div className={styles.featureInfo}>
                                 <h3 className={styles.featureTitle}>Review System</h3>
                                 <p className={styles.featureDesc}>
@@ -240,7 +277,7 @@ export default function LandingPage() {
             <footer className={styles.footer}>
                 <p className={styles.footerText}>
                     © 2025 Food Guard Platform — Built with{' '}
-                    <span className={styles.footerHeart}>♥</span> to fight food waste
+                    <Heart size={14} className={styles.footerHeart} fill="#e74c3c" /> to fight food waste
                 </p>
             </footer>
         </div>

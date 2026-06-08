@@ -128,9 +128,18 @@ export default function DashboardPage() {
             </div>
 
             {loading ? (
-                <div className={styles.loading}>
-                    <div className={styles.spinner} />
-                    <span>İlanlar yükleniyor...</span>
+                <div className={styles.skeletonGrid}>
+                    {Array.from({ length: 6 }).map((_, index) => (
+                        <div key={index} className={styles.skeletonCard}>
+                            <div className={styles.skeletonImage} />
+                            <div className={styles.skeletonBody}>
+                                <div className={styles.skeletonTitle} />
+                                <div className={styles.skeletonText} />
+                                <div className={styles.skeletonMeta} />
+                                <div className={styles.skeletonButtons} />
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : products.length === 0 ? (
                 <div className={styles.emptyState}>

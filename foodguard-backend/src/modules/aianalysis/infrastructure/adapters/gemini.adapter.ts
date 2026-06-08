@@ -44,6 +44,8 @@ export class GeminiAdapter implements IAiApiProvider {
       };
     }
 
+    this.logger.log(`Starting Gemini AI analysis. Storage: ${dto.storageCondition}, Duration: ${dto.storageDurationHours}h, Smell Change: ${dto.hasSmellChange}`);
+
     const prompt = this.buildPrompt(dto);
 
     const requestBody = {
@@ -82,11 +84,15 @@ export class GeminiAdapter implements IAiApiProvider {
       const aiResponseText =
         response.data.candidates?.[0]?.content?.parts?.[0]?.text;
 
+      this.logger.log(`Received raw Gemini API response: ${aiResponseText}`);
+
       if (!aiResponseText) {
         throw new Error('Empty response from AI');
       }
 
-      return this.parseAiResponse(aiResponseText);
+      const report = this.parseAiResponse(aiResponseText);
+      this.logger.log(`Successfully parsed risk report. Identity: ${report.foodIdentity}, Risk Level: ${report.riskLevel}`);
+      return report;
     } catch (error) {
       this.logger.error(
         'Gemini API request failed',

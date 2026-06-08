@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserOrmEntity } from '../../../../users/infrastructure/repositories/user.orm-entity';
+import { ConversationOrmEntity } from './conversation.orm-entity';
 
 @Entity({ name: 'messages' })
 export class MessageOrmEntity {
@@ -32,4 +33,10 @@ export class MessageOrmEntity {
 
   @Column()
   receiverId: string;
+
+  @ManyToOne(() => ConversationOrmEntity, { onDelete: 'CASCADE', nullable: true })
+  conversation?: ConversationOrmEntity;
+
+  @Column({ type: 'uuid', nullable: true })
+  conversationId?: string;
 }

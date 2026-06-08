@@ -12,6 +12,7 @@ import { Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MessageOrmEntity } from '../persistence/orm-entities/message.orm-entity';
+import { ConversationOrmEntity } from '../persistence/orm-entities/conversation.orm-entity';
 
 @WebSocketGateway({
   cors: {
@@ -28,6 +29,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+    @InjectRepository(ConversationOrmEntity)
+    private readonly conversationRepository: Repository<ConversationOrmEntity>,
   ) {}
 
   handleConnection(client: Socket) {
@@ -45,29 +48,66 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendMessage')
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { conversationId: string; content: string }, // Matches frontend socketService.sendMessage
+    @MessageBody() data: { conversationId: string; content: string },
   ) {
     const senderId = client.handshake.query.userId as string;
+    if (!senderId) return;
 
-    // TODO: Ideally we would parse conversationId to get the recipient, 
-    // or the frontend should send { to, content }. Since frontend doesn't send "to" in socketService.sendMessage,
-    // let's assume `data.conversationId` might be just `recipientId` since we don't have a Conversation entity yet.
-    // Wait, the frontend sends `conversationId` but how do we know the receiverId?
+    let conversation: ConversationOrmEntity | null = null;
 
-    // Let's modify the parameter to expect { to: string, content: string } from frontend for simplicity, 
-    // or just rely on what frontend already sends.
-    const receiverId = data.conversationId; // For this simple implementation, assume conversationId = otherUserId 
+    // Check if conversationId is a conversation ID or a recipientId
+    if (data.conversationId.length === 36) {
+      conversation = await this.conversationRepository.findOne({
+        where: { id: data.conversationId },
+      });
+    }
+
+    // If not found by ID, it might be that the conversationId passed is actually the recipientId
+    if (!conversation) {
+      const recipientId = data.conversationId;
+      conversation = await this.conversationRepository.findOne({
+        where: [
+          { participant1Id: senderId, participant2Id: recipientId },
+          { participant1Id: recipientId, participant2Id: senderId },
+        ],
+      });
+
+      // Create conversation if it doesn't exist yet
+      if (!conversation) {
+        conversation = this.conversationRepository.create({
+          participant1Id: senderId,
+          participant2Id: recipientId,
+        });
+        await this.conversationRepository.save(conversation);
+      }
+    }
+
+    const receiverId = conversation.participant1Id === senderId 
+      ? conversation.participant2Id 
+      : conversation.participant1Id;
 
     const messageEntity = this.messageRepository.create({
       content: data.content,
       senderId,
       receiverId,
+      conversationId: conversation.id,
       isRead: false,
     });
     
     await this.messageRepository.save(messageEntity);
 
+    // Update conversation updatedAt timestamp
+    conversation.updatedAt = new Date();
+    await this.conversationRepository.save(conversation);
+
+    // Send to recipient
     this.server.to(`user_${receiverId}`).emit('newMessage', {
+      ...messageEntity,
+      timestamp: messageEntity.createdAt,
+    });
+
+    // Send to sender (echo/sync across devices)
+    this.server.to(`user_${senderId}`).emit('newMessage', {
       ...messageEntity,
       timestamp: messageEntity.createdAt,
     });

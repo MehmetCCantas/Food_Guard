@@ -17,6 +17,12 @@ function getOtherParticipant(conv: Conversation, myId?: string) {
     return conv.participants?.find((p) => p.id !== myId) ?? conv.participants?.[0];
 }
 
+function cleanChatName(name: string) {
+    if (!name) return 'User';
+    const cleaned = name.replace(/\b(Donor User|Partner User|Donor|Recipient|Owner|Admin)\b/gi, '').trim();
+    return cleaned || 'User';
+}
+
 function ChatPageContent() {
     const { user } = useAuth();
     const {
@@ -101,11 +107,11 @@ function ChatPageContent() {
                                     onClick={() => setActiveConversation(conv.id)}
                                 >
                                     <div className={styles.convAvatar}>
-                                        {(other?.fullName || other?.firstName || '?').charAt(0).toUpperCase()}
+                                        {cleanChatName(other?.fullName || `${other?.firstName} ${other?.lastName}`).charAt(0).toUpperCase()}
                                     </div>
                                     <div className={styles.convInfo}>
                                         <div className={styles.convName}>
-                                            {other?.fullName || `${other?.firstName} ${other?.lastName}` || 'User'}
+                                            {cleanChatName(other?.fullName || `${other?.firstName} ${other?.lastName}`)}
                                         </div>
                                         {conv.product && (
                                             <div className={styles.convProduct}>
@@ -149,11 +155,11 @@ function ChatPageContent() {
                         {/* Chat Header */}
                         <div className={styles.chatHeader}>
                             <div className={styles.chatHeaderAvatar}>
-                                {(otherUser?.fullName || otherUser?.firstName || '?').charAt(0).toUpperCase()}
+                                {cleanChatName(otherUser?.fullName || `${otherUser?.firstName} ${otherUser?.lastName}`).charAt(0).toUpperCase()}
                             </div>
                             <div className={styles.chatHeaderInfo}>
                                 <div className={styles.chatHeaderName}>
-                                    {otherUser?.fullName || `${otherUser?.firstName} ${otherUser?.lastName}` || 'User'}
+                                    {cleanChatName(otherUser?.fullName || `${otherUser?.firstName} ${otherUser?.lastName}`)}
                                 </div>
                                 {activeConversation?.product && (
                                     <div className={styles.chatHeaderProduct}>

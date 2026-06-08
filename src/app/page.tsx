@@ -87,7 +87,7 @@ export default function LandingPage() {
                     <div className={styles.heroGuestWrap}>
                         <Link href="/dashboard" className={styles.ctaGuest}>
                             <Eye size={16} />
-                            <span>Giriş yapmadan keşfet</span>
+                            <span>Explore as Guest</span>
                         </Link>
                     </div>
                 </div>

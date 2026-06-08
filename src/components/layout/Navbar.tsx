@@ -81,7 +81,7 @@ export default function Navbar() {
                 {isLoggedIn && isDonor && (
                     <Link href="/my-donations" className={styles.navLink}>
                         <Package size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
-                        <span>İlanlarım</span>
+                        <span>My Listings</span>
                     </Link>
                 )}
             </div>
@@ -90,8 +90,8 @@ export default function Navbar() {
                 <button
                     className={styles.themeToggleBtn}
                     onClick={toggleTheme}
-                    aria-label="Karanlık Modu Aç/Kapat"
-                    title={theme === 'dark' ? 'Açık Mod' : 'Karanlık Mod'}
+                    aria-label="Toggle Dark Mode"
+                    title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                 >
                     {theme === 'dark' ? (
                         <Sun size={20} className={styles.themeIcon} strokeWidth={2.2} />
@@ -112,7 +112,7 @@ export default function Navbar() {
                                     setShowNotifPanel(!showNotifPanel);
                                     setShowDropdown(false);
                                 }}
-                                aria-label="Bildirimler"
+                                aria-label="Notifications"
                             >
                                 <Bell className={styles.bellIcon} size={20} strokeWidth={2.2} />
                                 {totalBadge > 0 && (
@@ -127,11 +127,11 @@ export default function Navbar() {
                                     <div className={styles.notifPanelHeader}>
                                         <span className={styles.notifPanelTitle}>
                                             <Bell size={16} style={{ marginRight: '6px', color: 'var(--primary)', verticalAlign: 'middle' }} />
-                                            Bildirimler
+                                            Notifications
                                         </span>
                                         {unreadCount > 0 && (
                                             <button className={styles.markAllBtn} onClick={markAllRead}>
-                                                Tümünü okundu işaretle
+                                                Mark all as read
                                             </button>
                                         )}
                                     </div>
@@ -140,7 +140,7 @@ export default function Navbar() {
                                         {notifications.length === 0 ? (
                                             <div className={styles.notifEmpty}>
                                                 <BellOff size={32} strokeWidth={1.5} style={{ color: 'var(--text-light)', marginBottom: '4px' }} />
-                                                <p>Henüz bildirim yok</p>
+                                                <p>No notifications yet</p>
                                             </div>
                                         ) : (
                                             notifications.slice(0, 20).map((notif) => {
@@ -162,7 +162,7 @@ export default function Navbar() {
                                                             <div className={styles.notifTitle}>{notif.title}</div>
                                                             <div className={styles.notifBody}>{notif.body}</div>
                                                             <div className={styles.notifTime}>
-                                                                {new Date(notif.createdAt).toLocaleTimeString('tr-TR', {
+                                                                {new Date(notif.createdAt).toLocaleTimeString('en-US', {
                                                                     hour: '2-digit', minute: '2-digit'
                                                                 })}
                                                             </div>
@@ -222,19 +222,19 @@ export default function Navbar() {
                                     <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                         <span className={styles.dropdownItemLabel}>
                                             <User size={16} strokeWidth={2} className={styles.menuIcon} />
-                                            Profilim
+                                            My Profile
                                         </span>
                                     </Link>
                                     <Link href="/settings" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                         <span className={styles.dropdownItemLabel}>
                                             <Settings size={16} strokeWidth={2} className={styles.menuIcon} />
-                                            Ayarlar
+                                            Settings
                                         </span>
                                     </Link>
                                     <Link href="/chat" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                         <span className={styles.dropdownItemLabel}>
                                             <MessageSquare size={16} strokeWidth={2} className={styles.menuIcon} />
-                                            Mesajlarım
+                                            My Messages
                                         </span>
                                         {chatUnread > 0 && (
                                             <span className={styles.dropdownBadge}>{chatUnread}</span>
@@ -245,7 +245,7 @@ export default function Navbar() {
                                         <Link href="/my-donations" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                             <span className={styles.dropdownItemLabel}>
                                                 <Package size={16} strokeWidth={2} className={styles.menuIcon} />
-                                                İlanlarım
+                                                My Listings
                                             </span>
                                         </Link>
                                     )}
@@ -253,27 +253,27 @@ export default function Navbar() {
                                         <Link href="/my-collections" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                             <span className={styles.dropdownItemLabel}>
                                                 <ShoppingBag size={16} strokeWidth={2} className={styles.menuIcon} />
-                                                Koleksiyonlarım
+                                                My Collections
                                             </span>
                                         </Link>
                                     )}
                                     <Link href="/requests" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                         <span className={styles.dropdownItemLabel}>
                                             <ClipboardList size={16} strokeWidth={2} className={styles.menuIcon} />
-                                            Talepler
+                                            Requests
                                         </span>
                                     </Link>
                                     <Link href="/impact" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                                         <span className={styles.dropdownItemLabel}>
                                             <BarChart2 size={16} strokeWidth={2} className={styles.menuIcon} />
-                                            Etkileşimim
+                                            My Impact
                                         </span>
                                     </Link>
 
                                     <div className={styles.dropdownDivider} />
                                     <button className={styles.dropdownLogout} onClick={handleLogout}>
                                         <LogOut size={16} strokeWidth={2} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                                        <span>Çıkış Yap</span>
+                                        <span>Log Out</span>
                                     </button>
                                 </div>
                             )}

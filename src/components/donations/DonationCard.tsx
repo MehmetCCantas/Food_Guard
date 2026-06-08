@@ -99,22 +99,22 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className={styles.loginModalIcon}>🔐</div>
-                        <h3 className={styles.loginModalTitle}>Giriş Gerekiyor</h3>
+                        <h3 className={styles.loginModalTitle}>Login Required</h3>
                         <p className={styles.loginModalDesc}>
-                            Bu işlemi gerçekleştirmek için hesabınıza giriş yapmanız gerekiyor.
+                            You need to log in to your account to perform this action.
                         </p>
                         <div className={styles.loginModalActions}>
                             <button
                                 className={styles.loginModalBtn}
                                 onClick={() => router.push('/login')}
                             >
-                                Giriş Yap
+                                Log In
                             </button>
                             <button
                                 className={styles.loginModalBtnSecondary}
                                 onClick={() => router.push('/register')}
                             >
-                                Kayıt Ol
+                                Sign Up
                             </button>
                         </div>
                         <button

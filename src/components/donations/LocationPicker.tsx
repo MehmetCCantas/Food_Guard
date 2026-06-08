@@ -31,7 +31,7 @@ export default function LocationPicker({ initialLat, initialLng, onChange, onAdd
     const fetchAddressFromCoords = async (lat: number, lng: number) => {
         try {
             const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&zoom=18`;
-            const res = await fetch(url, { headers: { 'Accept-Language': 'tr' } });
+            const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
             const data = await res.json();
             
             if (data && data.address && onAddressFetch) {
@@ -140,7 +140,7 @@ export default function LocationPicker({ initialLat, initialLng, onChange, onAdd
         const timer = setTimeout(async () => {
             try {
                 const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressToSearch)}`;
-                const res = await fetch(url, { headers: { 'Accept-Language': 'tr' } });
+                const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
                 const data = await res.json();
                 
                 if (data && data.length > 0) {

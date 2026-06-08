@@ -77,7 +77,7 @@ export default function DashboardPage() {
                                 <span className={styles.statValue}>
                                     {loading ? '—' : products.filter(p => p.donorId === user?.id).length}
                                 </span>
-                                <span className={styles.statLabel}>Aktif İlanlarım</span>
+                                <span className={styles.statLabel}>My Active Listings</span>
                             </div>
                         </div>
                     )}
@@ -91,7 +91,7 @@ export default function DashboardPage() {
                                 <span className={styles.statValue}>
                                     {loading ? '—' : products.length}
                                 </span>
-                                <span className={styles.statLabel}>Mevcut İlanlar</span>
+                                <span className={styles.statLabel}>Available Listings</span>
                             </div>
                         </div>
                     )}
@@ -103,7 +103,7 @@ export default function DashboardPage() {
                             <span className={styles.statValue}>
                                 {requestCount}
                             </span>
-                            <span className={styles.statLabel}>{isDonor ? 'Gelen Talepler' : 'Taleplerim'}</span>
+                            <span className={styles.statLabel}>{isDonor ? 'Incoming Requests' : 'My Requests'}</span>
                         </div>
                     </div>
 
@@ -115,7 +115,7 @@ export default function DashboardPage() {
                             <span className={styles.statValue}>
                                 {totalUnread || 0}
                             </span>
-                            <span className={styles.statLabel}>Okunmamış Mesajlar</span>
+                            <span className={styles.statLabel}>Unread Messages</span>
                         </div>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
             {/* Listings Header */}
             <div className={styles.pageHeader}>
-                <h1 className={styles.pageTitle}>{isDonor ? 'İlanlarım' : 'Mevcut Gıda İlanları'}</h1>
+                <h1 className={styles.pageTitle}>{isDonor ? 'My Listings' : 'Available Food Listings'}</h1>
                 <DonationFilters filters={filters} onFilterChange={handleFilterChange} />
             </div>
 
@@ -144,8 +144,8 @@ export default function DashboardPage() {
             ) : products.length === 0 ? (
                 <div className={styles.emptyState}>
                     <Utensils size={48} strokeWidth={1.5} className={styles.emptyIconSvg} />
-                    <p className={styles.emptyText}>İlan bulunamadı</p>
-                    <p className={styles.emptySubtext}>Filtrelerinizi ayarlamayı deneyin veya daha sonra tekrar kontrol edin.</p>
+                    <p className={styles.emptyText}>No listings found</p>
+                    <p className={styles.emptySubtext}>Try adjusting your filters or check back later.</p>
                 </div>
             ) : (
                 <div className={styles.donationGrid}>

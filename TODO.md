@@ -49,3 +49,4 @@ These features are currently simulated (MOCK) and need to be connected to real t
 - [x] **Dark Mode Toggle:** Implement a premium, smooth, accessible Dark Mode theme toggle with local storage persistence and system preference synchronization.
 - [ ] **Spacing & Layout Consistency:** Ensure uniform padding/margins across all components. Let elements "breathe".
 - [ ] **High-Quality Assets:** Use professional, consistent placeholder images for empty states or default avatars.
+- [x] **Localization:** Translate all remaining UI text, badges, headers, and alerts from Turkish to English to ensure the entire application is fully English-localized.

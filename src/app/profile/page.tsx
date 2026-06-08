@@ -77,22 +77,22 @@ export default function ProfilePage() {
             <div className={styles.loginGuard}>
                 <div className={styles.loginGuardCard}>
                     <div className={styles.loginGuardIcon}>🔐</div>
-                    <h1 className={styles.loginGuardTitle}>Profil Sayfası</h1>
+                    <h1 className={styles.loginGuardTitle}>Profile Page</h1>
                     <p className={styles.loginGuardDesc}>
-                        Kişisel bilgilerinizi görüntülemek ve düzenlemek için giriş yapmanız gerekiyor.
+                        You need to log in to view and edit your personal information.
                     </p>
                     <div className={styles.loginGuardActions}>
                         <a href="/login" className={styles.loginGuardBtn}>
-                            Giriş Yap
+                            Log In
                         </a>
                         <a href="/register" className={styles.loginGuardBtnSecondary}>
-                            Hesap Oluştur
+                            Create Account
                         </a>
                     </div>
                     <p className={styles.loginGuardNote}>
-                        Hesabınız yok mu?{' '}
+                        Don't have an account?{' '}
                         <a href="/register" className={styles.loginGuardLink}>
-                            Ücretsiz kayıt ol →
+                            Sign up for free →
                         </a>
                     </p>
                 </div>

@@ -7,14 +7,14 @@
     font-weight: 800;
     color: var(--text-primary);
     letter-spacing: -0.02em;
-    margin-bottom: 24px;
+    margin-bottom: var(--page-header-margin-bottom);
 }
 
 /* ---- Profile Layout ---- */
 .profileLayout {
     display: grid;
     grid-template-columns: 280px 1fr;
-    gap: 24px;
+    gap: var(--grid-gap);
 }
 
 /* ---- Profile Sidebar ---- */
@@ -23,7 +23,7 @@
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-card);
-    padding: 28px;
+    padding: var(--card-padding);
     text-align: center;
 }
 
@@ -99,7 +99,7 @@
 .profileMain {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--grid-gap);
 }
 
 .section {
@@ -140,7 +140,7 @@
 }
 
 .sectionBody {
-    padding: 20px 24px;
+    padding: var(--card-padding);
 }
 
 /* ---- Form ---- */

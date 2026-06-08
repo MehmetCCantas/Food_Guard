@@ -103,11 +103,13 @@ export default function AdminPage() {
         }
     };
 
-    const getStatusBadge = (status?: string) => {
-        switch (status?.toUpperCase()) {
+    const getStatusBadge = (status?: string, verificationStatus?: string) => {
+        const val = status || verificationStatus;
+        switch (val?.toUpperCase()) {
             case 'VERIFIED': return <span className={styles.statusActive}>Verified</span>;
             case 'PENDING': return <span className={styles.statusPending}>Pending</span>;
-            default: return <span className={styles.statusInactive}>{status || 'Unknown'}</span>;
+            case 'UNVERIFIED': return <span className={styles.statusInactive}>Unverified</span>;
+            default: return <span className={styles.statusInactive}>{val || 'Unknown'}</span>;
         }
     };
 
@@ -199,7 +201,7 @@ export default function AdminPage() {
                                                 <td><strong>{u.fullName || `${u.firstName} ${u.lastName}`}</strong></td>
                                                 <td>{u.email}</td>
                                                 <td>{getRoleBadge(u.role)}</td>
-                                                <td>{getStatusBadge(u.status as string)}</td>
+                                                <td>{getStatusBadge(u.status, (u as any).verificationStatus)}</td>
                                                 <td>{formatDate(u.createdAt)}</td>
                                                 <td>
                                                     {u.id !== user?.id && (

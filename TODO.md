@@ -18,10 +18,10 @@ These features are currently simulated (MOCK) and need to be connected to real t
   - *Backend:* Currently uses `mock-email.adapter.ts`. Needs integration with a real provider (SendGrid, Nodemailer, etc.).
 - [ ] **SMS / Phone Verification:**
   - *Frontend/Backend:* Currently mocked. Needs Firebase Phone Auth or Twilio integration.
-- [ ] **AI Safety Analysis (Gemini):**
+- [x] **AI Safety Analysis (Gemini):**
   - *Backend:* Currently uses `mock-ai.adapter.ts` for evaluating food listings. 
   - *Action:* The Gemini API key is in `.env` (commented out). Needs to be activated and switched to `gemini.adapter.ts`.
-- [ ] **Real-Time Chat & WebSockets:**
+- [x] **Real-Time Chat & WebSockets:**
   - *Frontend:* Remove `localStorage` fallback in `chatService.ts` for chat history and conversation lists.
   - *Backend:* Create a `Conversation` database table (Entity) to group messages. Write a `GET /conversations` endpoint so the frontend can list active chats without relying on browser memory.
 
@@ -42,10 +42,10 @@ These features are currently simulated (MOCK) and need to be connected to real t
 ## 4. 🎨 UI/UX & Professional Design Improvements
 *To-do items to elevate the platform from a "basic/AI-generated" look to a premium, professional application:*
 
-- [ ] **Iconography:** Replace all generic system emojis (⚙️, 👤, 📦) with a professional SVG icon library (e.g., Lucide Icons, Heroicons).
-- [ ] **Typography:** Integrate a modern, clean web font (e.g., Inter, Outfit, or Plus Jakarta Sans) with proper hierarchy and font weights.
-- [ ] **Color Palette & Depth:** Move away from basic flat colors. Implement a cohesive, rich color system. Use subtle shadows (elevation) and soft gradients or glassmorphism.
-- [ ] **Micro-animations & Interactions:** Add smooth CSS transitions on hover, active states, and page navigation. Use *Skeleton Loading* instead of basic spinners for data fetching.
+- [x] **Iconography:** Replace all generic system emojis (⚙️, 👤, 📦) with a professional SVG icon library (e.g., Lucide Icons, Heroicons).
+- [x] **Typography:** Integrate a modern, clean web font (e.g., Inter, Outfit, or Plus Jakarta Sans) with proper hierarchy and font weights.
+- [x] **Color Palette & Depth:** Move away from basic flat colors. Implement a cohesive, rich color system. Use subtle shadows (elevation) and soft gradients or glassmorphism.
+- [x] **Micro-animations & Interactions:** Add smooth CSS transitions on hover, active states, and page navigation. Use *Skeleton Loading* instead of basic spinners for data fetching.
 - [x] **Dark Mode Toggle:** Implement a premium, smooth, accessible Dark Mode theme toggle with local storage persistence and system preference synchronization.
 - [ ] **Spacing & Layout Consistency:** Ensure uniform padding/margins across all components. Let elements "breathe".
 - [ ] **High-Quality Assets:** Use professional, consistent placeholder images for empty states or default avatars.

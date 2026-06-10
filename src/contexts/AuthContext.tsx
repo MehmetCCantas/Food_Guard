@@ -35,6 +35,8 @@ function normalizeUser(raw: Record<string, unknown>): User {
         address: (raw.address ?? raw.addressText ?? raw.city) as string | undefined,
         city: (raw.city as string) || undefined,
         district: (raw.district as string) || undefined,
+        isEmailVerified: (raw.isEmailVerified as boolean) ?? false,
+        isPhoneVerified: (raw.isPhoneVerified as boolean) ?? false,
         createdAt: raw.createdAt as string | undefined,
     } as User;
 }

@@ -19,6 +19,9 @@ export class UserResponseDto {
   addressText?: string;
   location?: { lat: number; lon: number };
   verificationStatus: VerificationStatus;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  phoneNumber?: string;
   ratingScore: number;
   createdAt: Date;
   updatedAt: Date;

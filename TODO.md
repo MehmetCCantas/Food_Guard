@@ -13,9 +13,10 @@ This document tracks all missing features, inactive components, mock services, a
 ## 1. 🔄 Features to Activate (Mock → Real)
 These features are currently simulated (MOCK) and need to be connected to real third-party services or activated.
 
-- [ ] **Email Verification:** 
-  - *Frontend:* UI is commented out in `settings/page.tsx` so it doesn't interrupt development.
-  - *Backend:* Currently uses `mock-email.adapter.ts`. Needs integration with a real provider (SendGrid, Nodemailer, etc.).
+- [x] **Email Verification:** 
+  - *Frontend:* UI is active in `settings/page.tsx`.
+  - *Backend:* Replaced `mock-email.adapter.ts` with `nodemailer.adapter.ts` (Gmail SMTP). Sends branded HTML verification code emails.
+  - *Setup needed:* Add `MAIL_HOST`, `MAIL_PORT`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM` to `.env`.
 - [ ] **SMS / Phone Verification:**
   - *Frontend/Backend:* Currently mocked. Needs Firebase Phone Auth or Twilio integration.
 - [x] **AI Safety Analysis (Gemini):**

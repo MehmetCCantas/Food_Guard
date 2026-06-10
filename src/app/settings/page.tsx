@@ -337,21 +337,26 @@ export default function SettingsPage() {
                             <span className={styles.fieldHint}>If you change it, you will need to verify your new address.</span>
                         </div>
 
-                        {/* Email verification panel — only opens when needed */}
-                        {emailNeedsVerification && (
-                            <div className={styles.verificationPanel}>
-                                <div className={styles.verificationPanelHeader}>
-                                    <span className={styles.verificationPanelIcon}>📧</span>
-                                    <div>
-                                        <div className={styles.verificationPanelTitle}>Email Verification</div>
-                                        <div className={styles.verificationPanelDesc}>
-                                            {verifyingEmail
+                        {/* Email Verification Status — always visible */}
+                        <div className={styles.verificationPanel}>
+                            <div className={styles.verificationPanelHeader}>
+                                <span className={styles.verificationPanelIcon}>📧</span>
+                                <div style={{ flex: 1 }}>
+                                    <div className={styles.verificationPanelTitle}>Email Verification</div>
+                                    <div className={styles.verificationPanelDesc}>
+                                        {user.isEmailVerified
+                                            ? '✅ Your email address is verified.'
+                                            : verifyingEmail
                                                 ? 'Enter the 6-digit code sent to your email.'
-                                                : 'A verification code has been sent to your new email address.'}
-                                        </div>
+                                                : 'Your email is not verified yet. Click below to receive a code.'}
                                     </div>
                                 </div>
-                                {verifyingEmail ? (
+                                {user.isEmailVerified && (
+                                    <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap' }}>✔ Verified</span>
+                                )}
+                            </div>
+                            {!user.isEmailVerified && (
+                                verifyingEmail ? (
                                     <div className={styles.verificationInputGroup}>
                                         <input
                                             type="text"
@@ -381,11 +386,11 @@ export default function SettingsPage() {
                                         onClick={handleResendEmailVerification}
                                         disabled={verificationLoading}
                                     >
-                                        {verificationLoading ? '⏳ Sending...' : '📨 Resend Code'}
+                                        {verificationLoading ? '⏳ Sending...' : '📨 Send Verification Email'}
                                     </button>
-                                )}
-                            </div>
-                        )}
+                                )
+                            )}
+                        </div>
 
                         {/* Phone */}
                         <div className={styles.formGroup}>

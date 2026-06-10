@@ -17,8 +17,10 @@ These features are currently simulated (MOCK) and need to be connected to real t
   - *Frontend:* UI is active in `settings/page.tsx`.
   - *Backend:* Replaced `mock-email.adapter.ts` with `nodemailer.adapter.ts` (Gmail SMTP). Sends branded HTML verification code emails.
   - *Setup needed:* Add `MAIL_HOST`, `MAIL_PORT`, `MAIL_USER`, `MAIL_PASS`, `MAIL_FROM` to `.env`.
-- [ ] **SMS / Phone Verification:**
-  - *Frontend/Backend:* Currently mocked. Needs Firebase Phone Auth or Twilio integration.
+- [x] **SMS / Phone Verification:**
+  - *Frontend:* Firebase JS SDK integrated (`signInWithPhoneNumber` + invisible reCAPTCHA). Settings page has always-visible Phone Verification panel.
+  - *Backend:* Firebase Admin SDK initialized in `main.ts`. `verifyPhone` uses `admin.auth().verifyIdToken()` to validate Firebase ID tokens.
+  - *Bonus:* Phone number change triggers automatic re-verification (backend resets `isPhoneVerified`). Account becomes `VERIFIED` when both email + phone are confirmed.
 - [x] **AI Safety Analysis (Gemini):**
   - *Backend:* Currently uses `mock-ai.adapter.ts` for evaluating food listings. 
   - *Action:* The Gemini API key is in `.env` (commented out). Needs to be activated and switched to `gemini.adapter.ts`.

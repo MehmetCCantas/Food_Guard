@@ -7,6 +7,26 @@ import rateLimit from 'express-rate-limit';
 import { winstonLogger } from './shared/logger/winston.config';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
+import * as admin from 'firebase-admin';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// ─── Firebase Admin SDK init ──────────────────────────────
+const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
+if (!admin.apps.length) {
+  try {
+    if (fs.existsSync(serviceAccountPath)) {
+      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+      console.log('✅ Firebase Admin SDK initialized');
+    } else {
+      console.warn('⚠️  firebase-service-account.json not found');
+    }
+  } catch (e: any) {
+    console.error('❌ Firebase Admin init error:', e.message);
+  }
+}
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

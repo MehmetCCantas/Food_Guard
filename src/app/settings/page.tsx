@@ -54,7 +54,7 @@ export default function SettingsPage() {
     const [phoneVerificationCode, setPhoneVerificationCode] = useState('');
     const [phoneVerificationLoading, setPhoneVerificationLoading] = useState(false);
     const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-    const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+    const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
 
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: '',
@@ -116,13 +116,15 @@ export default function SettingsPage() {
                 }
             }
             if (phoneChanged && form.phoneNumber.length >= 10) {
-                setPhoneNeedsVerification(true);
-                try {
-                    await authService.sendPhoneVerification();
-                    setVerifyingPhone(true);
-                } catch (e) {
-                    console.warn('Phone verification send failed:', e);
+                // Reset Firebase verifier so user gets a fresh SMS flow
+                if (recaptchaVerifierRef.current) {
+                    recaptchaVerifierRef.current.clear();
+                    recaptchaVerifierRef.current = null;
                 }
+                setConfirmationResult(null);
+                setPhoneVerificationCode('');
+                setVerifyingPhone(false);
+                // Panel is always visible — user will click "Send SMS Code" manually
             }
         } catch (err: any) {
             if (emailChanged && (err?.response?.status === 400 || err?.response?.status === 422)) {
@@ -192,20 +194,28 @@ export default function SettingsPage() {
         setPhoneVerificationLoading(true);
         setError(null);
         try {
-            // Format phone number to E.164 if not already
             const formattedPhone = phoneNum.startsWith('+') ? phoneNum : `+90${phoneNum.replace(/^0/, '')}`;
 
-            const recaptchaVerifier = new RecaptchaVerifier(firebaseAuth, 'recaptcha-container', {
-                size: 'invisible',
-                callback: () => {},
-            });
+            // Create verifier only once — reuse on subsequent calls
+            if (!recaptchaVerifierRef.current) {
+                recaptchaVerifierRef.current = new RecaptchaVerifier(firebaseAuth, 'recaptcha-container', {
+                    size: 'invisible',
+                    callback: () => {},
+                });
+            }
 
-            const result = await signInWithPhoneNumber(firebaseAuth, formattedPhone, recaptchaVerifier);
+            const result = await signInWithPhoneNumber(firebaseAuth, formattedPhone, recaptchaVerifierRef.current);
             setConfirmationResult(result);
             setVerifyingPhone(true);
             setPhoneNeedsVerification(true);
         } catch (err: any) {
+            console.error('Firebase phone auth error:', err);
             setError('Failed to send SMS: ' + (err?.message || 'Unknown error'));
+            // Only clear verifier on actual error
+            if (recaptchaVerifierRef.current) {
+                recaptchaVerifierRef.current.clear();
+                recaptchaVerifierRef.current = null;
+            }
         } finally {
             setPhoneVerificationLoading(false);
         }
@@ -423,7 +433,7 @@ export default function SettingsPage() {
                         </div>
 
                         {/* Invisible reCAPTCHA container required by Firebase */}
-                        <div id="recaptcha-container" ref={recaptchaContainerRef} />
+                        <div id="recaptcha-container" />
 
                         {/* Phone Verification — always visible */}
                         <div className={styles.verificationPanel}>

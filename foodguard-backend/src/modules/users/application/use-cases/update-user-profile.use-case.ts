@@ -7,6 +7,7 @@ import {
 import { User } from '../../domain/entities/user.entity';
 import { UpdateUserDto } from '../../infrastructure/dtos/update-user.dto';
 import { IHashingService, IUserRepository } from '../ports/out/user.out-port';
+import { VerificationStatus } from '../../domain/entities/user.entity';
 
 @Injectable()
 export class UpdateUserProfileUseCase {
@@ -31,6 +32,9 @@ export class UpdateUserProfileUseCase {
         throw new ConflictException('Email is already in use');
       }
       user.email = dto.email.toLowerCase();
+      // Email changed → require re-verification
+      user.isEmailVerified = false;
+      user.verificationStatus = VerificationStatus.UNVERIFIED;
     }
 
     if (dto.password) {
@@ -41,6 +45,13 @@ export class UpdateUserProfileUseCase {
     if (dto.city) user.city = dto.city;
     if (dto.district) user.district = dto.district;
     if (dto.addressText) user.addressText = dto.addressText;
+
+    // Phone number changed → reset verification
+    if (dto.phoneNumber !== undefined && dto.phoneNumber !== user.phoneNumber) {
+      user.phoneNumber = dto.phoneNumber;
+      user.isPhoneVerified = false;
+      user.verificationStatus = VerificationStatus.UNVERIFIED;
+    }
 
     if (dto.latitude && dto.longitude) {
       user.location = { lat: dto.latitude, lon: dto.longitude };

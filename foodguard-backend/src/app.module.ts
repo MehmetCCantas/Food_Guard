@@ -18,6 +18,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { TaskModule } from './modules/tasks/task.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/firebase-admin.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { ChatModule } from './modules/chat/chat.module';
     NotificationsModule,
     TaskModule,
     ChatModule,
+    FirebaseAdminModule.forRoot(),
   ],
   controllers: [],
   providers: [],

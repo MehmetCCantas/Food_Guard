@@ -1,4 +1,5 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import * as admin from 'firebase-admin';
 import { LoginDto } from '../../infrastructure/dtos/login.dto';
 import { ForgotPasswordDto } from '../../infrastructure/dtos/forgot-password.dto';
 import { ResetPasswordDto } from '../../infrastructure/dtos/reset-password.dto';

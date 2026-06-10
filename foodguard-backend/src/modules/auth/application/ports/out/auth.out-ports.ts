@@ -25,6 +25,7 @@ export const IEmailService = Symbol('IEmailService');
 
 export interface IEmailService {
   sendPasswordResetEmail(email: string, token: string): Promise<void>;
+  sendVerificationCode(email: string, code: string): Promise<void>;
 }
 
 export const IUserRepository = IUserRepositoryFromUser;

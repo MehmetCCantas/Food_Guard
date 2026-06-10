@@ -10,7 +10,15 @@ export class MockEmailAdapter implements IEmailService {
     this.logger.log(`To: ${email}`);
     this.logger.log(`Password Reset Token: ${token}`);
     this.logger.warn(`-------------------------`);
+    return Promise.resolve();
+  }
 
+  async sendVerificationCode(email: string, code: string): Promise<void> {
+    this.logger.warn(`--- MOCK VERIFICATION EMAIL ---`);
+    this.logger.log(`To: ${email}`);
+    this.logger.log(`Verification Code: ${code}`);
+    this.logger.warn(`--------------------------------`);
     return Promise.resolve();
   }
 }
+

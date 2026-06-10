@@ -17,7 +17,7 @@ import { ResetPasswordUseCase } from './application/use-cases/reset-password.use
 
 import { AuthController } from './infrastructure/controllers/auth.controller';
 import { JwtAdapter } from './infrastructure/adapters/jwt.adapter';
-import { MockEmailAdapter } from './infrastructure/adapters/mock-email.adapter';
+import { NodemailerAdapter } from './infrastructure/adapters/nodemailer.adapter';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './infrastructure/strategies/jwt-refresh.strategy';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
@@ -53,7 +53,7 @@ import { JwtRefreshGuard } from './infrastructure/guards/jwt-refresh.guard';
     },
     {
       provide: IEmailService,
-      useClass: MockEmailAdapter,
+      useClass: NodemailerAdapter,
     },
   ],
   exports: [JwtAuthGuard, RolesGuard, PassportModule, JwtRefreshGuard],

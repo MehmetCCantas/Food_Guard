@@ -1,5 +1,4 @@
-import { Injectable, Inject, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { LoginDto } from '../../infrastructure/dtos/login.dto';
 import { ForgotPasswordDto } from '../../infrastructure/dtos/forgot-password.dto';
 import { ResetPasswordDto } from '../../infrastructure/dtos/reset-password.dto';
@@ -9,7 +8,7 @@ import { LoginUseCase } from '../use-cases/login.use-case';
 import { RefreshTokenUseCase } from '../use-cases/refresh-token.use-case';
 import { ForgotPasswordUseCase } from '../use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../use-cases/reset-password.use-case';
-import { IUserRepository, IHashingService } from '../ports/out/auth.out-ports';
+import { IUserRepository, IHashingService, IEmailService } from '../ports/out/auth.out-ports';
 import { VerificationStatus } from '../../../users/domain/enums/user-status.enum';
 
 @Injectable()
@@ -23,6 +22,8 @@ export class AuthService implements IAuthService {
     private readonly userRepository: IUserRepository,
     @Inject(IHashingService)
     private readonly hashingService: IHashingService,
+    @Inject(IEmailService)
+    private readonly emailService: IEmailService,
   ) {}
 
   async login(
@@ -73,10 +74,7 @@ export class AuthService implements IAuthService {
     user.emailVerificationExpires = new Date(Date.now() + 15 * 60 * 1000);
     await this.userRepository.save(user);
 
-    console.log(`\n=========================================\n`);
-    console.log(`📧 [MOCK EMAIL] To: ${user.email}`);
-    console.log(`Your Verification Code: ${code}`);
-    console.log(`\n=========================================\n`);
+    await this.emailService.sendVerificationCode(user.email, code);
   }
 
 

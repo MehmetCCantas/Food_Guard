@@ -38,6 +38,7 @@ These features are currently simulated (MOCK) and need to be connected to real t
 ## 3. 🖥️ Frontend Integration
 - [ ] **API Services:** Fully connect `requestService.ts` and `productService.ts` to the NestJS backend and remove any fallback mock data.
 - [ ] **Dashboard & Donation Cards:** Replace mock calculations (e.g., unread chat counts, incoming requests) with real live data from context/WebSocket.
+- [ ] **Product Categories:** Review and reorganize product listing categories (e.g., add/rename/remove category options on the listing creation form and filter panel).
 
 ## 4. 🎨 UI/UX & Professional Design Improvements
 *To-do items to elevate the platform from a "basic/AI-generated" look to a premium, professional application:*

@@ -104,68 +104,29 @@ export class AuthService implements IAuthService {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new NotFoundException('User not found');
 
-    // ==========================================
-    // FIREBASE GERÇEK SMS DOĞRULAMASI (YORUMA ALINDI)
-    // ==========================================
-    /*
-    if (!admin.apps.length) {
-      try {
-        admin.initializeApp({
-            credential: admin.credential.applicationDefault()
-        });
-      } catch (err) {
-        throw new InternalServerErrorException('Firebase Admin not initialized properly.');
-      }
-    }
-
     try {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
       if (!decodedToken.phone_number) {
-        throw new BadRequestException('Phone number is missing in token');
+        throw new BadRequestException('Phone number is missing in Firebase token');
       }
       user.isPhoneVerified = true;
+      user.phoneVerificationCode = undefined;
       if (user.isEmailVerified && user.isPhoneVerified) {
-          user.verificationStatus = VerificationStatus.VERIFIED;
+        user.verificationStatus = VerificationStatus.VERIFIED;
       }
       await this.userRepository.save(user);
     } catch (error: any) {
-      throw new BadRequestException('Invalid phone verification token: ' + error.message);
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException('Invalid Firebase phone token: ' + error.message);
     }
-    */
-
-    // ==========================================
-    // MOCK (SAHTE) SMS DOĞRULAMASI
-    // ==========================================
-    if (user.phoneVerificationCode !== idToken) { // idToken field'ini geçici olarak kod taşıyıcı olarak kullanıyoruz
-      throw new BadRequestException('Invalid SMS verification code');
-    }
-    
-    user.isPhoneVerified = true;
-    user.phoneVerificationCode = undefined; // Opsiyonel: UserOrmEntity'ye phoneVerificationCode eklenebilir. Şimdilik emailVerificationCode gibi kullanıyoruz.
-    
-    if (user.isEmailVerified && user.isPhoneVerified) {
-        user.verificationStatus = VerificationStatus.VERIFIED;
-    }
-    
-    await this.userRepository.save(user);
   }
 
   async sendPhoneVerification(userId: string): Promise<void> {
+    // Firebase Phone Auth: SMS is sent directly from the frontend via Firebase JS SDK.
+    // This endpoint is kept for compatibility but the real SMS flow is handled client-side.
     const user = await this.userRepository.findById(userId);
     if (!user) throw new NotFoundException('User not found');
     if (user.isPhoneVerified) return;
-
-    // Firebase yerine mock SMS kodu üretiyoruz
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Geçici olarak emailVerificationCode alanını veya any/yeni eklenecek alanı kullanabiliriz.
-    // user.entity'e phoneVerificationCode eklenecek.
-    (user as any).phoneVerificationCode = code; 
-    await this.userRepository.save(user);
-
-    console.log(`\n=========================================\n`);
-    console.log(`📱 [MOCK SMS] To: ${user.phoneNumber || 'User Phone'}`);
-    console.log(`Your SMS Verification Code: ${code}`);
-    console.log(`\n=========================================\n`);
+    // No-op: frontend handles SMS sending via Firebase SDK
   }
 }

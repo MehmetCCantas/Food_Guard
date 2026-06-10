@@ -43,6 +43,9 @@ uploads/
 .env.production.local
 .env.local
 
+# Firebase service account (sensitive credentials)
+firebase-service-account.json
+
 # temp directory
 .temp
 .tmp

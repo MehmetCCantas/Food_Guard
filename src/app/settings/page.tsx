@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './settings.module.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { userService } from '@/services/userService';
 import { authService } from '@/services/authService';
 import { User } from '@/types';
+import { firebaseAuth } from '@/lib/firebase';
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
 
 const roleLabels: Record<string, string> = {
     DONOR: '🏪 Donor',
@@ -51,6 +53,8 @@ export default function SettingsPage() {
     const [verifyingPhone, setVerifyingPhone] = useState(false);
     const [phoneVerificationCode, setPhoneVerificationCode] = useState('');
     const [phoneVerificationLoading, setPhoneVerificationLoading] = useState(false);
+    const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+    const recaptchaContainerRef = useRef<HTMLDivElement>(null);
 
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: '',
@@ -178,39 +182,53 @@ export default function SettingsPage() {
         }
     };
 
-    // Phone: resend SMS
+    // Phone: Send SMS via Firebase
     const handleResendPhoneVerification = async () => {
-        if (!form.phoneNumber || form.phoneNumber.length < 10) {
-            setError('Please enter a valid phone number (+905...)');
+        const phoneNum = form.phoneNumber.trim();
+        if (!phoneNum || phoneNum.length < 10) {
+            setError('Please enter a valid phone number (e.g. +90 555 123 4567)');
             return;
         }
         setPhoneVerificationLoading(true);
         setError(null);
         try {
-            await authService.sendPhoneVerification();
+            // Format phone number to E.164 if not already
+            const formattedPhone = phoneNum.startsWith('+') ? phoneNum : `+90${phoneNum.replace(/^0/, '')}`;
+
+            const recaptchaVerifier = new RecaptchaVerifier(firebaseAuth, 'recaptcha-container', {
+                size: 'invisible',
+                callback: () => {},
+            });
+
+            const result = await signInWithPhoneNumber(firebaseAuth, formattedPhone, recaptchaVerifier);
+            setConfirmationResult(result);
             setVerifyingPhone(true);
+            setPhoneNeedsVerification(true);
         } catch (err: any) {
-            setError('Failed to send SMS: ' + (err.response?.data?.message || err.message));
+            setError('Failed to send SMS: ' + (err?.message || 'Unknown error'));
         } finally {
             setPhoneVerificationLoading(false);
         }
     };
 
-    // Phone: verify code
+    // Phone: Confirm code + send Firebase ID Token to backend
     const handleVerifyPhoneCode = async () => {
-        if (phoneVerificationCode.length < 6) return;
+        if (!confirmationResult || phoneVerificationCode.length < 6) return;
         setPhoneVerificationLoading(true);
         setError(null);
         try {
-            await authService.verifyPhone(phoneVerificationCode);
+            const result = await confirmationResult.confirm(phoneVerificationCode);
+            const idToken = await result.user.getIdToken();
+            await authService.verifyPhone(idToken);
             await refreshUser();
             setVerifyingPhone(false);
             setPhoneNeedsVerification(false);
             setPhoneVerificationCode('');
+            setConfirmationResult(null);
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Invalid SMS code or verification failed.');
+            setError(err.response?.data?.message || err?.message || 'Invalid SMS code or verification failed.');
         } finally {
             setPhoneVerificationLoading(false);
         }
@@ -394,12 +412,7 @@ export default function SettingsPage() {
 
                         {/* Phone */}
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Phone
-                                {phoneNeedsVerification && (
-                                    <span className={styles.pendingBadge}>⚠️ Verification required</span>
-                                )}
-                            </label>
+                            <label className={styles.label}>Phone</label>
                             <input
                                 className={styles.input}
                                 type="tel"
@@ -409,21 +422,29 @@ export default function SettingsPage() {
                             />
                         </div>
 
-                        {/* Phone verification panel — only opens when needed */}
-                        {phoneNeedsVerification && (
-                            <div className={styles.verificationPanel}>
-                                <div className={styles.verificationPanelHeader}>
-                                    <span className={styles.verificationPanelIcon}>📱</span>
-                                    <div>
-                                        <div className={styles.verificationPanelTitle}>Phone Verification</div>
-                                        <div className={styles.verificationPanelDesc}>
-                                            {verifyingPhone
+                        {/* Invisible reCAPTCHA container required by Firebase */}
+                        <div id="recaptcha-container" ref={recaptchaContainerRef} />
+
+                        {/* Phone Verification — always visible */}
+                        <div className={styles.verificationPanel}>
+                            <div className={styles.verificationPanelHeader}>
+                                <span className={styles.verificationPanelIcon}>📱</span>
+                                <div style={{ flex: 1 }}>
+                                    <div className={styles.verificationPanelTitle}>Phone Verification</div>
+                                    <div className={styles.verificationPanelDesc}>
+                                        {user.isPhoneVerified
+                                            ? '✅ Your phone number is verified.'
+                                            : verifyingPhone
                                                 ? 'Enter the 6-digit SMS code sent to your phone.'
-                                                : 'An SMS code has been sent to your new phone number.'}
-                                        </div>
+                                                : 'Enter your phone number above, then click Send SMS.'}
                                     </div>
                                 </div>
-                                {verifyingPhone ? (
+                                {user.isPhoneVerified && (
+                                    <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap' }}>✔ Verified</span>
+                                )}
+                            </div>
+                            {!user.isPhoneVerified && (
+                                verifyingPhone ? (
                                     <div className={styles.verificationInputGroup}>
                                         <input
                                             type="text"
@@ -442,7 +463,7 @@ export default function SettingsPage() {
                                         </button>
                                         <button
                                             className={styles.cancelBtn}
-                                            onClick={() => setVerifyingPhone(false)}
+                                            onClick={() => { setVerifyingPhone(false); setPhoneVerificationCode(''); }}
                                         >
                                             Cancel
                                         </button>
@@ -453,11 +474,11 @@ export default function SettingsPage() {
                                         onClick={handleResendPhoneVerification}
                                         disabled={phoneVerificationLoading}
                                     >
-                                        {phoneVerificationLoading ? '⏳ Sending...' : '📨 Resend SMS'}
+                                        {phoneVerificationLoading ? '⏳ Sending SMS...' : '📱 Send SMS Code'}
                                     </button>
-                                )}
-                            </div>
-                        )}
+                                )
+                            )}
+                        </div>
                     </section>
 
                     {/* Address */}

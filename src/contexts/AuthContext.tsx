@@ -29,7 +29,6 @@ function normalizeUser(raw: Record<string, unknown>): User {
         lastName: raw.lastName as string | undefined ?? (raw.fullName as string)?.split(' ').slice(1).join(' ') ?? '',
         fullName: raw.fullName as string | undefined ?? `${raw.firstName ?? ''} ${raw.lastName ?? ''}`.trim(),
         role: (raw.role as UserRole) ?? UserRole.INDIVIDUAL_RECIPIENT,
-        // Backend → verificationStatus, frontend → status
         status: (raw.status ?? raw.verificationStatus) as string,
         phoneNumber: raw.phoneNumber as string | undefined,
         address: (raw.address ?? raw.addressText ?? raw.city) as string | undefined,
@@ -67,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    // On mount: check if token exists and fetch profile
     useEffect(() => {
         const init = async () => {
             if (typeof window !== 'undefined' && localStorage.getItem('access_token')) {
@@ -88,12 +86,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = async (dto: RegisterDto) => {
         await authService.register(dto);
-        // Kayıt sonrası otomatik login
         try {
             await authService.login(dto.email, dto.password);
             await refreshUser();
         } catch {
-            // Login başarısız olursa (örn. hesap onay bekleniyor) sessizce geç
+            // sessizce geç
         }
     };
 

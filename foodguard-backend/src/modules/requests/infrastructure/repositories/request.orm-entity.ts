@@ -3,10 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { RequestStatus } from '../../domain/enums/request.enum';
+import { ProductOrmEntity } from '../../../products/infrastructure/repositories/product.orm-entity';
+import { UserOrmEntity } from '../../../users/infrastructure/repositories/user.orm-entity';
 
 @Entity({ name: 'requests' })
 @Index(['productId', 'recipientId'], {
@@ -40,4 +44,13 @@ export class RequestOrmEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // ─── Relations (lazy-loaded via repository relations option) ─────
+  @ManyToOne(() => ProductOrmEntity, { nullable: true, eager: false })
+  @JoinColumn({ name: 'productId' })
+  product?: ProductOrmEntity;
+
+  @ManyToOne(() => UserOrmEntity, { nullable: true, eager: false })
+  @JoinColumn({ name: 'recipientId' })
+  recipient?: UserOrmEntity;
 }

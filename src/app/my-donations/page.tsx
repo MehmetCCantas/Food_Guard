@@ -173,12 +173,32 @@ export default function MyDonationsPage() {
             closeModal();
             fetchMyProducts();
         } catch (error) {
-            console.error('Failed to create product:', error);
+            console.warn('Product submission blocked:', error);
             const errorMessage = error instanceof Error ? error.message : String(error);
-            if (errorMessage.includes('AI Analizi') || errorMessage.includes('AI Analysis') || errorMessage.includes('Forbidden') || errorMessage.includes('403')) {
-                setAiRejection(errorMessage.replace('API Error: 403 Forbidden', '').trim() || 'AI analysis found this product unsafe. Please check the product details.');
+
+            // AI rejection — any HTTP status
+            if (
+                errorMessage.includes('AI Analizi') ||
+                errorMessage.includes('AI Analysis') ||
+                errorMessage.includes('Forbidden') ||
+                errorMessage.includes('403') ||
+                errorMessage.includes('unsafe') ||
+                errorMessage.includes('Reddedildi')
+            ) {
+                setAiRejection(
+                    errorMessage
+                        .replace(/API Error: \d+ \w+/g, '')
+                        .trim() ||
+                    'AI analysis found this product unsafe to share. Please review the product condition.'
+                );
             } else {
-                alert('Failed to create listing. Please try again.');
+                // Generic backend error — show the backend message if available
+                const friendlyMsg = errorMessage
+                    .replace(/API Error: \d+ \w+/g, '')
+                    .trim();
+                setAiRejection(
+                    `⚠️ ${friendlyMsg || 'Something went wrong. Please check your inputs and try again.'}`
+                );
             }
         } finally {
             setSubmitting(false);
@@ -273,9 +293,22 @@ export default function MyDonationsPage() {
                                 <div className={styles.cardBody}>
                                     <div className={styles.cardHeader}>
                                         <h3 className={styles.cardTitle}>{product.title}</h3>
-                                        <span className={styles.statusAvailable}>
-                                            {categoryLabels[product.category] || product.category}
-                                        </span>
+                                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                            <span className={styles.statusAvailable}>
+                                                {categoryLabels[product.category] || product.category}
+                                            </span>
+                                            <span style={{
+                                                padding: '2px 10px',
+                                                borderRadius: '20px',
+                                                fontSize: '0.72rem',
+                                                fontWeight: 700,
+                                                background: product.status === 'RESERVED' ? '#f59e0b22' : product.status === 'COMPLETED' ? '#10b98122' : '#22c55e22',
+                                                color: product.status === 'RESERVED' ? '#b45309' : product.status === 'COMPLETED' ? '#065f46' : '#15803d',
+                                                border: `1px solid ${product.status === 'RESERVED' ? '#fcd34d' : product.status === 'COMPLETED' ? '#6ee7b7' : '#86efac'}`,
+                                            }}>
+                                                {product.status === 'RESERVED' ? '🤝 Reserved' : product.status === 'COMPLETED' ? '✅ Completed' : '🟢 Available'}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     {product.description && (

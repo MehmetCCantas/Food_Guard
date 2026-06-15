@@ -8,8 +8,12 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export const metadata: Metadata = {
-    title: 'Food Guard — Surplus Food Sharing Platform',
+    title: 'FoodGuard — Surplus Food Sharing Platform',
     description: 'Surplus food sharing platform. Reduce food waste, help your community.',
+    icons: {
+        icon: '/logo.png',
+        apple: '/logo.png',
+    },
 };
 
 export default function RootLayout({

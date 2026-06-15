@@ -73,8 +73,14 @@ export default function Navbar() {
     return (
         <nav className={styles.navbar}>
             <Link href="/dashboard" className={styles.logo}>
-                <Sparkles size={20} className={styles.logoIcon} />
-                <span>Food Guard</span>
+                <div style={{ width: 36, height: 36, overflow: 'hidden', flexShrink: 0, borderRadius: 6 }}>
+                    <img
+                        src="/logo.png"
+                        alt="FoodGuard"
+                        style={{ height: 48, width: 'auto', maxWidth: 'none', marginLeft: '-29px', marginTop: '0px', display: 'block' }}
+                    />
+                </div>
+                <span style={{ display: 'flex', alignItems: 'center', lineHeight: 1, marginTop: '2px' }}>Food Guard</span>
             </Link>
 
             <div className={styles.navCenter}>

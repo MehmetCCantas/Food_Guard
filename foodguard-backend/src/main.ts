@@ -10,6 +10,7 @@ import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as express from 'express';
 
 // ─── Firebase Admin SDK init ──────────────────────────────
 const serviceAccountPath = path.join(process.cwd(), 'firebase-service-account.json');
@@ -34,6 +35,11 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api/v1');
+
+  // ─── Static file serving for uploaded images ──────────────
+  const uploadsPath = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
+  app.use('/uploads', express.static(uploadsPath));
 
   app.use(
     helmet({

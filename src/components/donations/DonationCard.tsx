@@ -132,7 +132,26 @@ export default function DonationCard({ product, onRequestSuccess }: DonationCard
                     src={verifiedUrl}
                     alt={product.title}
                     className={styles.image}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&h=300&fit=crop'; }}
                 />
+                {/* AI Analysis Badge */}
+                <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    left: '8px',
+                    background: product.warningMessage ? 'rgba(245,158,11,0.92)' : 'rgba(16,185,129,0.92)',
+                    color: '#fff',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    backdropFilter: 'blur(4px)',
+                }}>
+                    🤖 {product.warningMessage ? 'AI Warning' : 'AI Safe'}
+                </div>
             </div>
             <div className={styles.body}>
                 <h3 className={styles.title}>{product.title}</h3>

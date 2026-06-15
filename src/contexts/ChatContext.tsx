@@ -51,8 +51,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         const offMessage = socketService.onMessage((msg: Message) => {
             // Aktif konuşmaya ait mesajsa ekle
             setMessages((prev) => {
+                // Exact ID match → zaten var
                 if (prev.some((m) => m.id === msg.id)) return prev;
+
                 if (msg.conversationId === activeConversationId) {
+                    // Kendi gönderdiğim mesajın socket echo'su → optimistic olanı replace et
+                    if (msg.senderId === user?.id) {
+                        const optIdx = prev.findIndex(
+                            (m) => m.id.startsWith('opt-') && m.content === msg.content
+                        );
+                        if (optIdx !== -1) {
+                            const updated = [...prev];
+                            updated[optIdx] = msg;
+                            return updated;
+                        }
+                    }
                     return [...prev, msg];
                 }
                 return prev;

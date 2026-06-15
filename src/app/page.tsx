@@ -6,10 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './landing.module.css';
 import { 
-    Utensils, 
     Sprout, 
     Rocket, 
-    Eye, 
     UserPlus, 
     Package, 
     Handshake, 
@@ -42,8 +40,14 @@ export default function LandingPage() {
             {/* ---- Navbar ---- */}
             <nav className={styles.nav}>
                 <div className={styles.navLogo}>
-                    <Utensils size={24} className={styles.navLogoIcon} strokeWidth={2.5} />
-                    <span>Food Guard</span>
+                    <div style={{ width: 36, height: 36, overflow: 'hidden', flexShrink: 0, borderRadius: 6 }}>
+                        <img
+                            src="/logo.png"
+                            alt="FoodGuard"
+                            style={{ height: 48, width: 'auto', maxWidth: 'none', marginLeft: '-29px', marginTop: '0px', display: 'block' }}
+                        />
+                    </div>
+                    <span style={{ display: 'flex', alignItems: 'center', lineHeight: 1, marginTop: '2px' }}>Food Guard</span>
                 </div>
                 <div className={styles.navActions}>
                     <Link href="/login" className={styles.navSignIn}>
@@ -84,12 +88,7 @@ export default function LandingPage() {
                             I Have an Account
                         </Link>
                     </div>
-                    <div className={styles.heroGuestWrap}>
-                        <Link href="/dashboard" className={styles.ctaGuest}>
-                            <Eye size={16} />
-                            <span>Explore as Guest</span>
-                        </Link>
-                    </div>
+
                 </div>
             </section>
 

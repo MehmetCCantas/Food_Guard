@@ -7,7 +7,7 @@ import {
 import { User } from '../../domain/entities/user.entity';
 import { UpdateUserDto } from '../../infrastructure/dtos/update-user.dto';
 import { IHashingService, IUserRepository } from '../ports/out/user.out-port';
-import { VerificationStatus } from '../../domain/entities/user.entity';
+import { VerificationStatus } from '../../domain/enums/user-status.enum';
 
 @Injectable()
 export class UpdateUserProfileUseCase {

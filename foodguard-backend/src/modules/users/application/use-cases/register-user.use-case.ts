@@ -18,7 +18,7 @@ export class RegisterUserUseCase {
   ) {}
 
   async execute(command: RegisterUserDto): Promise<User> {
-    const { email, fullName, password, city, district, role } = command;
+    const { email, fullName, password, city, district, role, phoneNumber } = command;
 
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
@@ -35,6 +35,7 @@ export class RegisterUserUseCase {
     newUser.city = city;
     newUser.district = district;
     newUser.role = role || UserRole.INDIVIDUAL_RECIPIENT;
+    newUser.phoneNumber = phoneNumber;
     newUser.verificationStatus = VerificationStatus.UNVERIFIED;
     newUser.ratingScore = 0;
     newUser.createdAt = new Date();

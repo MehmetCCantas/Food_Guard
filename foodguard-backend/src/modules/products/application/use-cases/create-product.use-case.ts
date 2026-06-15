@@ -3,6 +3,7 @@ import {
   Injectable,
   ForbiddenException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Product } from '../../domain/entities/product.entity';
@@ -19,6 +20,8 @@ const writeFileAsync = promisify(fs.writeFile);
 
 @Injectable()
 export class CreateProductUseCase {
+  private readonly logger = new Logger(CreateProductUseCase.name);
+
   constructor(
     @Inject(IProductRepository)
     private readonly productRepository: IProductRepository,
@@ -40,7 +43,21 @@ export class CreateProductUseCase {
     aiRequest.storageDurationHours = dto.storageDurationHours;
     aiRequest.hasSmellChange = dto.hasSmellChange;
 
-    const aiReport = await this.aiAnalysisService.analyzeFoodSafety(aiRequest);
+    let aiReport: Awaited<ReturnType<typeof this.aiAnalysisService.analyzeFoodSafety>>;
+    try {
+      aiReport = await this.aiAnalysisService.analyzeFoodSafety(aiRequest);
+    } catch (err) {
+      // AI analysis failed — create product with a safe default report
+      this.logger?.warn?.('AI analysis failed, using fallback report: ' + err?.message);
+      aiReport = {
+        foodIdentity: 'Unknown (AI Unavailable)',
+        riskLevel: 'Low',
+        confidenceScore: 0,
+        warningForRecipient: null,
+        recommendationToDonor: null,
+        analysisNotes: 'AI analysis could not be completed.',
+      } as any;
+    }
 
     if (aiReport.riskLevel === 'High') {
       throw new ForbiddenException(

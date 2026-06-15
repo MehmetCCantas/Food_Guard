@@ -100,11 +100,12 @@ export class RequestRepository implements IRequestRepository {
     const repository = this.getRepository();
     const [ormEntities, totalItems] = await repository.findAndCount({
       where: { recipientId: Equal(recipientId) },
+      relations: ['product', 'recipient'],
       order: { createdAt: 'DESC' },
       skip: offset,
       take: limit,
     });
-    return [ormEntities.map(this.toDomain), totalItems];
+    return [ormEntities.map(this.toDomain.bind(this)), totalItems];
   }
 
   async findByProductIdAndStatus(
@@ -134,6 +135,7 @@ export class RequestRepository implements IRequestRepository {
     const repository = this.getRepository();
     const [ormEntities, totalItems] = await repository.findAndCount({
       where: { donorId: Equal(donorId) },
+      relations: ['product', 'recipient'],
       order: { createdAt: 'DESC' },
       skip: offset,
       take: limit,

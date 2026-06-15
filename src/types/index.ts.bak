@@ -88,7 +88,6 @@ export interface ProductFilters {
     longitude?: number;
     radiusKm?: number;
     category?: ProductCategory | 'all';
-    search?: string;
     page?: number;
     limit?: number;
 }
@@ -181,9 +180,9 @@ export interface LoginResponse {
 export interface RegisterDto {
     email: string;
     password: string;
-    fullName: string;
+    firstName: string;
+    lastName: string;
     role: UserRole;
     phoneNumber: string;
-    city: string;
-    district: string;
+    address: string;
 }

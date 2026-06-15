@@ -5,6 +5,7 @@ import styles from './collections.module.css';
 import { DonationRequest, RequestStatus } from '@/types';
 import { requestService } from '@/services/requestService';
 import { useAuth } from '@/contexts/AuthContext';
+import { getImageUrl } from '@/utils/imageUrl';
 import Link from 'next/link';
 
 const formatDate = (dateStr?: string) => {
@@ -75,6 +76,13 @@ export default function MyCollectionsPage() {
                 <div className={styles.collectionsGrid}>
                     {requests.map((request) => (
                         <div key={request.id} className={styles.collectionCard}>
+                            {request.product?.imageUrl && (
+                                <img
+                                    src={getImageUrl(request.product.imageUrl)}
+                                    alt={request.product?.title || 'Food item'}
+                                    style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
+                                />
+                            )}
                             <div className={styles.cardHeader}>
                                 <div className={styles.productInfo}>
                                     <h3 className={styles.productTitle}>

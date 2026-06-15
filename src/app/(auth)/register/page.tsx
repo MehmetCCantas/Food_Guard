@@ -87,13 +87,13 @@ export default function RegisterPage() {
         setLoading(true);
         try {
             const dto: RegisterDto = {
-                firstName,
-                lastName,
+                fullName: `${firstName} ${lastName}`.trim(),
                 email,
                 password,
                 role: role as UserRole,
                 phoneNumber,
-                address,
+                city: address,
+                district: address,
             };
             await register(dto);
             router.push('/dashboard');

@@ -9,12 +9,11 @@ import { useAuth } from '@/contexts/AuthContext';
  *           requireAuth(() => doSomething());
  */
 export function useRequireAuth() {
-    const { isGuest, isLoggedIn } = useAuth();
+    const { isLoggedIn } = useAuth();
     const router = useRouter();
 
     return function requireAuth(action: () => void) {
-        if (!isLoggedIn || isGuest) {
-            // Guest veya giriş yapmamış → login'e yönlendir
+        if (!isLoggedIn) {
             router.push('/login');
             return;
         }

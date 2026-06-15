@@ -15,14 +15,7 @@ const nextConfig = {
                 hostname: '127.0.0.1',
             },
         ],
-    },
-    async rewrites() {
-        return [
-            {
-                source: '/api/:path*',
-                destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/:path*`,
-            },
-        ];
+        unoptimized: true,
     },
 };
 

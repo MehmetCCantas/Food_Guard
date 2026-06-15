@@ -34,10 +34,10 @@ export const authService = {
         // Backend DTO'suna dönüştür
         const backendDto = {
             email: dto.email,
-            fullName: `${dto.firstName} ${dto.lastName}`.trim(),
+            fullName: dto.fullName,
             password: dto.password,
-            city: dto.address?.split(',')[0]?.trim() || 'Unknown',
-            district: dto.address?.split(',')[1]?.trim() || 'Unknown',
+            city: dto.city,
+            district: dto.district,
             role: dto.role,
         };
         return await apiClient.post<{ message: string; data: RegisterDto }>('/users/register', backendDto);

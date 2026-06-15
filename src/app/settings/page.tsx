@@ -197,6 +197,10 @@ export default function SettingsPage() {
             const formattedPhone = phoneNum.startsWith('+') ? phoneNum : `+90${phoneNum.replace(/^0/, '')}`;
 
             // Create verifier only once — reuse on subsequent calls
+            if (!firebaseAuth) {
+                setError('Phone verification is not configured.');
+                return;
+            }
             if (!recaptchaVerifierRef.current) {
                 recaptchaVerifierRef.current = new RecaptchaVerifier(firebaseAuth, 'recaptcha-container', {
                     size: 'invisible',
@@ -204,7 +208,7 @@ export default function SettingsPage() {
                 });
             }
 
-            const result = await signInWithPhoneNumber(firebaseAuth, formattedPhone, recaptchaVerifierRef.current);
+            const result = await signInWithPhoneNumber(firebaseAuth!, formattedPhone, recaptchaVerifierRef.current);
             setConfirmationResult(result);
             setVerifyingPhone(true);
             setPhoneNeedsVerification(true);

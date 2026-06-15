@@ -7,5 +7,8 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
 };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-export const firebaseAuth = getAuth(app);
+const app = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+  ? (getApps().length ? getApp() : initializeApp(firebaseConfig))
+  : null;
+
+export const firebaseAuth = app ? getAuth(app) : null;

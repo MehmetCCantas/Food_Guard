@@ -65,11 +65,12 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
         }
 
         if (databaseUrl) {
-          console.log('Strategy: Using DATABASE_URL');
+          const isInternal = databaseUrl.includes('railway.internal');
+          console.log('Strategy: Using DATABASE_URL, internal:', isInternal);
           return {
             type: 'postgres',
             url: databaseUrl,
-            ssl: { rejectUnauthorized: false },
+            ssl: isInternal ? false : { rejectUnauthorized: false },
             autoLoadEntities: true,
             synchronize: true,
             retryAttempts: 20,

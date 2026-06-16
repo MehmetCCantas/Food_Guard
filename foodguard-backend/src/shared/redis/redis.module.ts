@@ -11,7 +11,8 @@ import Redis from 'ioredis';
       useFactory: (configService: ConfigService) => {
         const url = configService.get<string>('REDIS_URL');
         if (url) {
-          return new Redis(url, { tls: {} });
+          const useTls = url.startsWith('rediss://');
+          return new Redis(url, useTls ? { tls: {} } : {});
         }
         return new Redis({
           host: configService.get<string>('REDIS_HOST') || 'localhost',

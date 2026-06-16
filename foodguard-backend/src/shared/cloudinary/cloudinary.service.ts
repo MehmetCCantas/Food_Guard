@@ -29,9 +29,9 @@ export class CloudinaryService {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder, resource_type: 'image' },
         (error, result) => {
-          if (error) {
-            this.logger.error('Cloudinary upload failed', error.message);
-            reject(error);
+          if (error || !result) {
+            this.logger.error('Cloudinary upload failed', error?.message);
+            reject(error || new Error('No result from Cloudinary'));
           } else {
             resolve(result.secure_url);
           }

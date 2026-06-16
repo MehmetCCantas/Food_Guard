@@ -34,17 +34,19 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
         // Use process.env directly to bypass any ConfigService loading issues
         const pgHost = process.env.PGHOST;
         const pgPort = parseInt(process.env.PGPORT || '5432');
-        const pgUser = process.env.PGUSER || 'postgres';
+        const pgUser = process.env.PGUSER;
         const pgPassword = process.env.PGPASSWORD;
-        const pgDatabase = process.env.PGDATABASE || 'railway';
-        const databaseUrl = process.env.DATABASE_URL;
+        const pgDatabase = process.env.PGDATABASE;
+        const dbUrl = process.env.DB_URL || process.env.DATABASE_URL;
 
         console.log('=== DB CONFIG DEBUG ===');
-        console.log('PGHOST:', pgHost || 'NOT SET');
-        console.log('PGPORT:', process.env.PGPORT || 'NOT SET');
-        console.log('PGUSER:', pgUser);
-        console.log('PGDATABASE:', pgDatabase);
-        console.log('DATABASE_URL prefix:', databaseUrl ? databaseUrl.substring(0, 40) + '...' : 'NOT SET');
+        console.log('ENV KEYS:', Object.keys(process.env).filter(k => k.startsWith('PG') || k.includes('DATABASE') || k === 'DB_URL' || k === 'NODE_ENV').join(', '));
+        console.log('PGHOST:', JSON.stringify(pgHost));
+        console.log('PGPORT:', JSON.stringify(process.env.PGPORT));
+        console.log('PGUSER:', JSON.stringify(pgUser));
+        console.log('PGDATABASE:', JSON.stringify(pgDatabase));
+        console.log('DB_URL:', process.env.DB_URL ? process.env.DB_URL.substring(0, 40) + '...' : 'NOT SET');
+        console.log('DATABASE_URL:', process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 40) + '...' : 'NOT SET');
         console.log('======================');
 
         if (pgHost) {
@@ -53,10 +55,10 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
             type: 'postgres',
             host: pgHost,
             port: pgPort,
-            username: pgUser,
+            username: pgUser || 'postgres',
             password: pgPassword,
-            database: pgDatabase,
-            ssl: { rejectUnauthorized: false },
+            database: pgDatabase || 'railway',
+            ssl: false,
             autoLoadEntities: true,
             synchronize: true,
             retryAttempts: 20,
@@ -64,12 +66,12 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
           } as any;
         }
 
-        if (databaseUrl) {
-          const isInternal = databaseUrl.includes('railway.internal');
-          console.log('Strategy: Using DATABASE_URL, internal:', isInternal);
+        if (dbUrl) {
+          const isInternal = dbUrl.includes('railway.internal');
+          console.log('Strategy: Using DB_URL/DATABASE_URL, internal:', isInternal);
           return {
             type: 'postgres',
-            url: databaseUrl,
+            url: dbUrl,
             ssl: isInternal ? false : { rejectUnauthorized: false },
             autoLoadEntities: true,
             synchronize: true,

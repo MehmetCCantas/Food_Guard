@@ -43,8 +43,7 @@ export class GeminiAdapter implements IAiApiProvider {
 
     try {
       const model = this.genAI.getGenerativeModel(
-        { model: 'gemini-1.5-flash' },
-        { apiVersion: 'v1' },
+        { model: 'gemini-2.0-flash-lite' },
       );
 
       const result = await model.generateContent([

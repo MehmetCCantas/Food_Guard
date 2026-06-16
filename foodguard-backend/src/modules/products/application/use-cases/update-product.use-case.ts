@@ -41,11 +41,10 @@ export class UpdateProductUseCase {
     Object.assign(product, dto);
 
     if (dto.latitude && dto.longitude) {
-      product.location = {
-        type: 'Point',
-        coordinates: [dto.longitude, dto.latitude],
-      };
+      product.latitude = dto.latitude;
+      product.longitude = dto.longitude;
     }
+
 
     return this.productRepository.save(product);
   }

@@ -94,10 +94,9 @@ export class CreateProductUseCase {
     newProduct.createdAt = new Date();
     newProduct.warningMessage = aiReport.warningForRecipient;
 
-    newProduct.location = {
-      type: 'Point',
-      coordinates: [dto.longitude, dto.latitude],
-    };
+    newProduct.latitude = dto.latitude;
+    newProduct.longitude = dto.longitude;
+
 
     return this.productRepository.save(newProduct);
   }

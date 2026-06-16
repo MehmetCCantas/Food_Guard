@@ -64,16 +64,21 @@ export class ProductRepository implements IProductRepository {
     category?: ProductCategory,
     search?: string,
   ): Promise<[Product[], number]> {
+    // Haversine bounding box approximation (no PostGIS needed)
+    const latDelta = radiusMeters / 111000;
+    const lonDelta =
+      radiusMeters / (111000 * Math.cos((latitude * Math.PI) / 180));
+
     const queryBuilder = this.ormRepository.createQueryBuilder('product');
 
     queryBuilder
       .where(
-        'ST_DWithin(product.location, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, :radius)',
-        {
-          lon: longitude,
-          lat: latitude,
-          radius: radiusMeters,
-        },
+        'product.latitude BETWEEN :minLat AND :maxLat',
+        { minLat: latitude - latDelta, maxLat: latitude + latDelta },
+      )
+      .andWhere(
+        'product.longitude BETWEEN :minLon AND :maxLon',
+        { minLon: longitude - lonDelta, maxLon: longitude + lonDelta },
       )
       .andWhere('product.status = :status', {
         status: ProductStatus.AVAILABLE,
@@ -93,7 +98,7 @@ export class ProductRepository implements IProductRepository {
 
     const [ormEntities, totalItems] = await queryBuilder.getManyAndCount();
 
-    return [ormEntities.map(this.toDomain), totalItems];
+    return [ormEntities.map(this.toDomain.bind(this)), totalItems];
   }
 
   async updateStatus(

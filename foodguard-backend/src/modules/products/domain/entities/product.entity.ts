@@ -10,10 +10,8 @@ export class Product {
 
   category: ProductCategory;
 
-  location: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
+  latitude?: number;
+  longitude?: number;
 
   city: string;
   district: string;

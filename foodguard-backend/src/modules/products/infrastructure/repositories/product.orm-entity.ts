@@ -42,16 +42,11 @@ export class ProductOrmEntity {
   @Column()
   district: string;
 
-  @Column({
-    type: 'geography',
-    spatialFeatureType: 'Point',
-    srid: 4326,
-  })
-  @Index({ spatial: true })
-  location: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
+  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+  latitude?: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+  longitude?: number;
 
   @Column({ type: 'text', nullable: true })
   warningMessage?: string;

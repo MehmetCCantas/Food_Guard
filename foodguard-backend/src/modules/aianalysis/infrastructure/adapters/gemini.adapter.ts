@@ -107,25 +107,39 @@ export class GeminiAdapter implements IAiApiProvider {
 
   private buildPrompt(dto: AiAnalysisRequestDto): string {
     return `
-      You are a food safety expert AI. Analyze the image and data.
-      Data:
-      - Storage: ${dto.storageCondition}
-      - Duration: ${dto.storageDurationHours} hours
-      - Smell Change: ${dto.hasSmellChange ? 'Yes' : 'No'}
+      You are a strict food safety inspection AI. Your PRIMARY job is to analyze the VISUAL appearance of the food in the image.
 
-      Output ONLY valid JSON in this format (no markdown code blocks):
+      CRITICAL VISUAL INSPECTION RULES (highest priority):
+      1. If you see ANY mold (green, blue, black, white fuzzy spots, or patches of discoloration) -> IMMEDIATELY set riskLevel to "High"
+      2. If the food looks rotten, slimy, decomposed, or severely discolored -> riskLevel "High"
+      3. If the food has unusual dark spots, patches, or growth on surface -> riskLevel "High"
+      4. Fresh, clean, normal-looking food with no visible issues -> riskLevel "Low"
+
+      Additional metadata to consider AFTER visual check:
+      - Storage condition: ${dto.storageCondition}
+      - Hours since preparation: ${dto.storageDurationHours} hours
+      - Smell change reported: ${dto.hasSmellChange ? 'YES - indicates spoilage' : 'No'}
+
+      Extra rules from metadata:
+      - If smell change is Yes -> High Risk regardless of visual
+      - If room_temp storage > 4 hours -> at least Medium Risk
+      - If fridge storage > 72 hours -> Medium Risk
+
+      IMPORTANT: Visual mold detection overrides everything. A moldy food item is ALWAYS High Risk.
+
+      For "warningForRecipient": 
+      - If High Risk: write a clear, specific warning about what you see (e.g. "Visible mold detected on the food. Do NOT consume.")
+      - If Medium Risk: write a caution message
+      - If Low Risk: write empty string ""
+
+      Output ONLY valid JSON (no markdown, no code blocks):
       {
-        "foodIdentity": "string (Short name of food)",
+        "foodIdentity": "string (short name of the food you see)",
         "riskLevel": "Low" | "Medium" | "High",
-        "analysisPoints": ["string", "string"],
+        "analysisPoints": ["string describing what you see", "string with safety concern"],
         "recommendationToDonor": "string",
         "warningForRecipient": "string"
       }
-
-      Rules:
-      - If smell change is Yes -> High Risk.
-      - If room_temp > 4 hours -> High Risk.
-      - If visible mold -> High Risk.
     `;
   }
 

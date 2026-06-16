@@ -32,16 +32,28 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST'),
-        port: configService.get<number>('DATABASE_PORT'),
-        username: configService.get<string>('DATABASE_USER'),
-        password: configService.get<string>('DATABASE_PASSWORD'),
-        database: configService.get<string>('DATABASE_NAME'),
-        autoLoadEntities: true,
-        synchronize: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const url = configService.get<string>('DATABASE_URL');
+        if (url) {
+          return {
+            type: 'postgres',
+            url,
+            ssl: { rejectUnauthorized: false },
+            autoLoadEntities: true,
+            synchronize: true,
+          };
+        }
+        return {
+          type: 'postgres',
+          host: configService.get<string>('DATABASE_HOST') || 'localhost',
+          port: configService.get<number>('DATABASE_PORT') || 5432,
+          username: configService.get<string>('DATABASE_USER') || 'postgres',
+          password: configService.get<string>('DATABASE_PASSWORD') || '',
+          database: configService.get<string>('DATABASE_NAME') || 'foodguard',
+          autoLoadEntities: true,
+          synchronize: true,
+        };
+      },
     }),
 
     ServeStaticModule.forRoot({

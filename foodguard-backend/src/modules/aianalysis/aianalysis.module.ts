@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { IAiAnalysisService } from './application/ports/in/aianalysis.in-ports';
 import { IAiApiProvider } from './application/ports/out/aianalysis.out-ports';
@@ -8,7 +7,7 @@ import { AnalyzeFoodSafetyUseCase } from './application/use-cases/analyze-food-s
 import { GeminiAdapter } from './infrastructure/adapters/gemini.adapter';
 
 @Module({
-  imports: [HttpModule, ConfigModule],
+  imports: [ConfigModule],
   controllers: [],
   providers: [
     AnalyzeFoodSafetyUseCase,

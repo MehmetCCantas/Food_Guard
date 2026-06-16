@@ -1,11 +1,10 @@
-import { HttpService } from '@nestjs/axios';
 import {
   Injectable,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { RiskReport } from '../../domain/entities/risk-report.entity';
 import { AiAnalysisRequestDto } from '../dtos/ai-analysis-request.dto';
 import { IAiApiProvider } from '../../application/ports/out/aianalysis.out-ports';
@@ -13,94 +12,60 @@ import { IAiApiProvider } from '../../application/ports/out/aianalysis.out-ports
 @Injectable()
 export class GeminiAdapter implements IAiApiProvider {
   private readonly logger = new Logger(GeminiAdapter.name);
-  private readonly apiKey: string;
-  private readonly apiUrl: string;
+  private readonly genAI: GoogleGenerativeAI | null = null;
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('GOOGLE_AI_API_KEY');
 
     if (!apiKey || apiKey === 'your_gemini_api_key_here') {
-      this.logger.warn('GOOGLE_AI_API_KEY is not defined or is default in .env — AI analysis will be disabled.');
-      this.apiKey = 'disabled';
+      this.logger.warn('GOOGLE_AI_API_KEY is not defined — AI analysis will be disabled.');
     } else {
-      this.apiKey = apiKey;
+      this.genAI = new GoogleGenerativeAI(apiKey);
+      this.logger.log('✅ Gemini AI SDK initialized');
     }
-
-    this.apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${this.apiKey}`;
   }
 
   async analyzeImage(dto: AiAnalysisRequestDto): Promise<RiskReport> {
-    if (this.apiKey === 'disabled') {
-      this.logger.warn('AI analysis skipped because GOOGLE_AI_API_KEY is not configured in .env');
+    if (!this.genAI) {
+      this.logger.warn('AI analysis skipped — no API key configured');
       return {
         foodIdentity: 'Unknown (AI Disabled)',
         riskLevel: 'Low',
-        analysisPoints: ['AI analysis is disabled because no API key was provided.'],
-        recommendationToDonor: 'Please provide a valid API key to enable AI safety check.',
+        analysisPoints: ['AI analysis is disabled.'],
+        recommendationToDonor: 'Please provide a valid API key.',
         warningForRecipient: 'Safety not verified by AI.',
       };
     }
 
-    this.logger.log(`Starting Gemini AI analysis. Storage: ${dto.storageCondition}, Duration: ${dto.storageDurationHours}h, Smell Change: ${dto.hasSmellChange}`);
+    this.logger.log(`Starting Gemini AI analysis. Storage: ${dto.storageCondition}, Duration: ${dto.storageDurationHours}h`);
 
     const prompt = this.buildPrompt(dto);
 
-    const requestBody = {
-      contents: [
-        {
-          parts: [
-            { text: prompt },
-            {
-              inline_data: {
-                mime_type: dto.photoMimeType,
-                data: dto.photoBase64,
-              },
-            },
-          ],
-        },
-      ],
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        {
-          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-          threshold: 'BLOCK_NONE',
-        },
-        {
-          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-          threshold: 'BLOCK_NONE',
-        },
-      ],
-    };
-
     try {
-      const response = await firstValueFrom(
-        this.httpService.post(this.apiUrl, requestBody),
-      );
+      const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-      const aiResponseText =
-        response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+      const result = await model.generateContent([
+        prompt,
+        {
+          inlineData: {
+            mimeType: dto.photoMimeType,
+            data: dto.photoBase64,
+          },
+        },
+      ]);
 
-      this.logger.log(`Received raw Gemini API response: ${aiResponseText}`);
+      const aiResponseText = result.response.text();
+      this.logger.log(`Received Gemini response: ${aiResponseText}`);
 
       if (!aiResponseText) {
         throw new Error('Empty response from AI');
       }
 
       const report = this.parseAiResponse(aiResponseText);
-      this.logger.log(`Successfully parsed risk report. Identity: ${report.foodIdentity}, Risk Level: ${report.riskLevel}`);
+      this.logger.log(`Parsed risk report — Identity: ${report.foodIdentity}, Risk: ${report.riskLevel}`);
       return report;
     } catch (error) {
-      this.logger.error(
-        'Gemini API request failed',
-        error.response?.data || error.message,
-      );
-      if (error.response?.data) {
-        console.error(JSON.stringify(error.response.data, null, 2));
-      }
+      this.logger.error('Gemini SDK request failed', error?.message);
       throw new InternalServerErrorException('AI analysis failed');
     }
   }
@@ -127,8 +92,8 @@ export class GeminiAdapter implements IAiApiProvider {
 
       IMPORTANT: Visual mold detection overrides everything. A moldy food item is ALWAYS High Risk.
 
-      For "warningForRecipient": 
-      - If High Risk: write a clear, specific warning about what you see (e.g. "Visible mold detected on the food. Do NOT consume.")
+      For "warningForRecipient":
+      - If High Risk: write a clear warning (e.g. "Visible mold detected. Do NOT consume.")
       - If Medium Risk: write a caution message
       - If Low Risk: write empty string ""
 

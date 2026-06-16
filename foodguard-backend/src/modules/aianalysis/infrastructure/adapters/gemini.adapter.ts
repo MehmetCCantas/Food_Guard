@@ -42,7 +42,10 @@ export class GeminiAdapter implements IAiApiProvider {
     const prompt = this.buildPrompt(dto);
 
     try {
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = this.genAI.getGenerativeModel(
+        { model: 'gemini-1.5-flash' },
+        { apiVersion: 'v1' },
+      );
 
       const result = await model.generateContent([
         prompt,

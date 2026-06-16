@@ -30,56 +30,65 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
     EventEmitterModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const databaseUrl = configService.get<string>('DATABASE_URL');
-        const pgHost = configService.get<string>('PGHOST');
+      useFactory: () => {
+        // Use process.env directly to bypass any ConfigService loading issues
+        const pgHost = process.env.PGHOST;
+        const pgPort = parseInt(process.env.PGPORT || '5432');
+        const pgUser = process.env.PGUSER || 'postgres';
+        const pgPassword = process.env.PGPASSWORD;
+        const pgDatabase = process.env.PGDATABASE || 'railway';
+        const databaseUrl = process.env.DATABASE_URL;
+
+        console.log('=== DB CONFIG DEBUG ===');
+        console.log('PGHOST:', pgHost || 'NOT SET');
+        console.log('PGPORT:', process.env.PGPORT || 'NOT SET');
+        console.log('PGUSER:', pgUser);
+        console.log('PGDATABASE:', pgDatabase);
+        console.log('DATABASE_URL prefix:', databaseUrl ? databaseUrl.substring(0, 40) + '...' : 'NOT SET');
+        console.log('======================');
 
         if (pgHost) {
-          // Railway auto-injected PG* variables
-          console.log('Using Railway PG* variables, host:', pgHost);
+          console.log('Strategy: Using PGHOST individual variables');
           return {
             type: 'postgres',
             host: pgHost,
-            port: configService.get<number>('PGPORT') || 5432,
-            username: configService.get<string>('PGUSER') || 'postgres',
-            password: configService.get<string>('PGPASSWORD'),
-            database: configService.get<string>('PGDATABASE') || 'railway',
+            port: pgPort,
+            username: pgUser,
+            password: pgPassword,
+            database: pgDatabase,
             ssl: { rejectUnauthorized: false },
-            extra: { family: 4 },
             autoLoadEntities: true,
             synchronize: true,
             retryAttempts: 20,
             retryDelay: 5000,
-          };
+          } as any;
         }
 
         if (databaseUrl) {
-          console.log('Using DATABASE_URL:', databaseUrl.substring(0, 30) + '...');
+          console.log('Strategy: Using DATABASE_URL');
           return {
             type: 'postgres',
             url: databaseUrl,
             ssl: { rejectUnauthorized: false },
-            extra: { family: 4 },
             autoLoadEntities: true,
             synchronize: true,
             retryAttempts: 20,
             retryDelay: 5000,
-          };
+          } as any;
         }
 
         // Local development fallback
+        console.log('Strategy: Local fallback (localhost)');
         return {
           type: 'postgres',
-          host: configService.get<string>('DATABASE_HOST') || 'localhost',
-          port: configService.get<number>('DATABASE_PORT') || 5432,
-          username: configService.get<string>('DATABASE_USER') || 'postgres',
-          password: configService.get<string>('DATABASE_PASSWORD') || '',
-          database: configService.get<string>('DATABASE_NAME') || 'foodguard',
+          host: process.env.DATABASE_HOST || 'localhost',
+          port: parseInt(process.env.DATABASE_PORT || '5432'),
+          username: process.env.DATABASE_USER || 'postgres',
+          password: process.env.DATABASE_PASSWORD || '',
+          database: process.env.DATABASE_NAME || 'foodguard',
           autoLoadEntities: true,
           synchronize: true,
-        };
+        } as any;
       },
     }),
 

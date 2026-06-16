@@ -165,7 +165,9 @@ export default function MyDonationsPage() {
             };
 
             if (editMode && editingId) {
-                await productService.updateProduct(editingId, productPayload);
+                // Update: JSON only, no file upload
+                const { file: _file, ...updatePayload } = productPayload;
+                await productService.updateProduct(editingId, updatePayload);
             } else {
                 await productService.createProduct(productPayload);
             }

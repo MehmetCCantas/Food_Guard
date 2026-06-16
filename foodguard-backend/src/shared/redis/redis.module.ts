@@ -10,15 +10,23 @@ import Redis from 'ioredis';
       provide: 'REDIS_CLIENT',
       useFactory: (configService: ConfigService) => {
         const url = configService.get<string>('REDIS_URL');
+        let client: Redis;
         if (url) {
           const useTls = url.startsWith('rediss://');
-          return new Redis(url, useTls ? { tls: {} } : {});
+          client = new Redis(url, useTls ? { tls: {} } : {});
+        } else {
+          client = new Redis({
+            host: configService.get<string>('REDIS_HOST') || 'localhost',
+            port: configService.get<number>('REDIS_PORT') || 6379,
+            password: configService.get<string>('REDIS_PASSWORD') || undefined,
+            lazyConnect: true,
+          });
         }
-        return new Redis({
-          host: configService.get<string>('REDIS_HOST') || 'localhost',
-          port: configService.get<number>('REDIS_PORT') || 6379,
-          password: configService.get<string>('REDIS_PASSWORD') || undefined,
+        // Prevent unhandled error from crashing the process
+        client.on('error', (err) => {
+          console.error('Redis connection error:', err.message);
         });
+        return client;
       },
       inject: [ConfigService],
     },

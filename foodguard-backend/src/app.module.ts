@@ -47,6 +47,7 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
             password: configService.get<string>('PGPASSWORD'),
             database: configService.get<string>('PGDATABASE') || 'railway',
             ssl: { rejectUnauthorized: false },
+            extra: { family: 4 },
             autoLoadEntities: true,
             synchronize: true,
             retryAttempts: 20,
@@ -55,11 +56,12 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
         }
 
         if (databaseUrl) {
-          console.log('Using DATABASE_URL');
+          console.log('Using DATABASE_URL:', databaseUrl.substring(0, 30) + '...');
           return {
             type: 'postgres',
             url: databaseUrl,
             ssl: { rejectUnauthorized: false },
+            extra: { family: 4 },
             autoLoadEntities: true,
             synchronize: true,
             retryAttempts: 20,

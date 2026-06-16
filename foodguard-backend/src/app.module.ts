@@ -14,6 +14,7 @@ import { AiAnalysisModule } from './modules/aianalysis/aianalysis.module';
 import { ReviewModule } from './modules/reviews/review.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { RedisModule } from './shared/redis/redis.module';
+import { CloudinaryModule } from './shared/cloudinary/cloudinary.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { TaskModule } from './modules/tasks/task.module';
@@ -26,6 +27,7 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
       isGlobal: true,
     }),
 
+    CloudinaryModule,
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
 

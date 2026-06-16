@@ -29,7 +29,39 @@ if (!admin.apps.length) {
 }
 
 
+// ─── PostGIS Extension Bootstrap ──────────────────────────
+async function ensurePostgisExtension() {
+  const { Client } = await import('pg');
+  const dbUrl = process.env.DB_URL || process.env.DATABASE_URL;
+  const pgHost = process.env.PGHOST;
+  const isInternal = pgHost?.includes('railway.internal') || dbUrl?.includes('railway.internal');
+
+  const clientConfig: any = dbUrl
+    ? { connectionString: dbUrl, ssl: isInternal ? false : { rejectUnauthorized: false } }
+    : {
+        host: pgHost || 'localhost',
+        port: parseInt(process.env.PGPORT || '5432'),
+        user: process.env.PGUSER || 'postgres',
+        password: process.env.PGPASSWORD || '',
+        database: process.env.PGDATABASE || 'railway',
+        ssl: isInternal ? false : false,
+      };
+
+  const client = new Client(clientConfig);
+  try {
+    await client.connect();
+    await client.query('CREATE EXTENSION IF NOT EXISTS postgis;');
+    console.log('✅ PostGIS extension enabled');
+    await client.end();
+  } catch (e: any) {
+    console.warn('⚠️  PostGIS extension could not be enabled:', e.message);
+    try { await client.end(); } catch {}
+  }
+}
+
 async function bootstrap() {
+  await ensurePostgisExtension();
+
   const app = await NestFactory.create(AppModule, {
     logger: winstonLogger,
   });

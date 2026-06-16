@@ -105,6 +105,19 @@ export class AuthService implements IAuthService {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new NotFoundException('User not found');
 
+    // DEV MODE BYPASS: If in development mode and the token is 'mock-phone-token', verify immediately
+    const isDev = process.env.NODE_ENV === 'development';
+    if (isDev && idToken === 'mock-phone-token') {
+      console.warn(`💡 [DEV MODE BYPASS] Bypassing phone verification for user: ${userId}`);
+      user.isPhoneVerified = true;
+      user.phoneVerificationCode = undefined;
+      if (user.isEmailVerified && user.isPhoneVerified) {
+        user.verificationStatus = VerificationStatus.VERIFIED;
+      }
+      await this.userRepository.save(user);
+      return;
+    }
+
     try {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
       if (!decodedToken.phone_number) {

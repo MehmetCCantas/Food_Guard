@@ -492,6 +492,31 @@ export default function SettingsPage() {
                                     </button>
                                 )
                             )}
+                            {!user.isPhoneVerified && process.env.NODE_ENV === 'development' && (
+                                <div style={{ marginTop: '12px' }}>
+                                    <button
+                                        type="button"
+                                        className={styles.cancelBtn}
+                                        style={{ borderColor: '#eab308', color: '#d97706', width: '100%', fontSize: '13px', fontWeight: 600 }}
+                                        onClick={async () => {
+                                            setPhoneVerificationLoading(true);
+                                            setError(null);
+                                            try {
+                                                await authService.verifyPhone('mock-phone-token');
+                                                await refreshUser();
+                                                setSuccess(true);
+                                                setTimeout(() => setSuccess(false), 3000);
+                                            } catch (err: any) {
+                                                setError(err.response?.data?.message || 'Bypass failed.');
+                                            } finally {
+                                                setPhoneVerificationLoading(false);
+                                            }
+                                        }}
+                                    >
+                                        ⚠️ Bypass Phone Verification (DEV ONLY)
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </section>
 

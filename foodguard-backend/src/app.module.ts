@@ -33,16 +33,41 @@ import { FirebaseAdminModule } from './modules/auth/infrastructure/firebase/fire
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const url = configService.get<string>('DATABASE_URL');
-        if (url) {
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+        const pgHost = configService.get<string>('PGHOST');
+
+        if (pgHost) {
+          // Railway auto-injected PG* variables
+          console.log('Using Railway PG* variables, host:', pgHost);
           return {
             type: 'postgres',
-            url,
+            host: pgHost,
+            port: configService.get<number>('PGPORT') || 5432,
+            username: configService.get<string>('PGUSER') || 'postgres',
+            password: configService.get<string>('PGPASSWORD'),
+            database: configService.get<string>('PGDATABASE') || 'railway',
             ssl: { rejectUnauthorized: false },
             autoLoadEntities: true,
             synchronize: true,
+            retryAttempts: 20,
+            retryDelay: 5000,
           };
         }
+
+        if (databaseUrl) {
+          console.log('Using DATABASE_URL');
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            ssl: { rejectUnauthorized: false },
+            autoLoadEntities: true,
+            synchronize: true,
+            retryAttempts: 20,
+            retryDelay: 5000,
+          };
+        }
+
+        // Local development fallback
         return {
           type: 'postgres',
           host: configService.get<string>('DATABASE_HOST') || 'localhost',

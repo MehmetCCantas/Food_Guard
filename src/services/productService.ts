@@ -31,9 +31,9 @@ export const productService = {
     async getNearbyProducts(filters?: ProductFilters): Promise<PaginatedResponse<Product>> {
         try {
             const params: Record<string, string> = {};
-            params.latitude = (filters?.latitude ?? 41.0082).toString();
-            params.longitude = (filters?.longitude ?? 28.9784).toString();
-            params.radiusKm = (filters?.radiusKm ?? 50).toString();
+            params.latitude = (filters?.latitude ?? 39.9334).toString();
+            params.longitude = (filters?.longitude ?? 32.8597).toString();
+            params.radiusKm = (filters?.radiusKm ?? 2000).toString();
 
             if (filters?.category && filters.category !== 'all') params.category = filters.category;
             if (filters?.page) params.page = filters.page.toString();

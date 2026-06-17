@@ -93,8 +93,7 @@ export default function SettingsPage() {
 
         try {
             const payload: Partial<User> = {
-                firstName: form.firstName,
-                lastName: form.lastName,
+                fullName: `${form.firstName} ${form.lastName}`.trim(),
                 phoneNumber: form.phoneNumber,
                 address: form.address,
             };

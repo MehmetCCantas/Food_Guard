@@ -73,17 +73,15 @@ export class ProductRepository implements IProductRepository {
 
     queryBuilder
       .where(
-        '(product.latitude BETWEEN :minLat AND :maxLat AND product.longitude BETWEEN :minLon AND :maxLon) OR (product.latitude IS NULL OR product.longitude IS NULL)',
+        '((product.latitude BETWEEN :minLat AND :maxLat AND product.longitude BETWEEN :minLon AND :maxLon) OR (product.latitude IS NULL OR product.longitude IS NULL)) AND product.status = :status',
         {
           minLat: latitude - latDelta,
           maxLat: latitude + latDelta,
           minLon: longitude - lonDelta,
           maxLon: longitude + lonDelta,
+          status: ProductStatus.AVAILABLE,
         },
-      )
-      .andWhere('product.status = :status', {
-        status: ProductStatus.AVAILABLE,
-      });
+      );
 
     if (category) {
       queryBuilder.andWhere('product.category = :category', { category });

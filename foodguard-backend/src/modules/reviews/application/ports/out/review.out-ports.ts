@@ -8,6 +8,7 @@ export const IReviewRepository = Symbol('IReviewRepository');
 export interface IReviewRepository {
   save(review: Review): Promise<Review>;
   findByRequestId(requestId: string): Promise<Review | null>;
+  findByDonorId(donorId: string): Promise<Review[]>;
 }
 
 export const IRequestRepository = IRequestRepositoryFromRequest;

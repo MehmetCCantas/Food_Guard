@@ -35,4 +35,12 @@ export class ReviewRepository implements IReviewRepository {
     if (!ormEntity) return null;
     return this.toDomain(ormEntity);
   }
+
+  async findByDonorId(donorId: string): Promise<Review[]> {
+    const ormEntities = await this.ormRepository.find({
+      where: { donorId },
+      order: { createdAt: 'DESC' },
+    });
+    return ormEntities.map(this.toDomain.bind(this));
+  }
 }

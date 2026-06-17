@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import styles from './profile.module.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { userService } from '@/services/userService';
+import { reviewService, ReviewDto } from '@/services/reviewService';
 import { User, UserRole } from '@/types';
 
 const roleLabels: Record<string, string> = {
@@ -19,6 +20,15 @@ export default function ProfilePage() {
     const [editForm, setEditForm] = useState<Partial<User>>({});
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
+    const [reviews, setReviews] = useState<ReviewDto[]>([]);
+
+    useEffect(() => {
+        if (user?.id) {
+            reviewService.getDonorReviews(user.id)
+                .then(setReviews)
+                .catch(() => setReviews([]));
+        }
+    }, [user?.id]);
 
     useEffect(() => {
         if (user) {
@@ -257,6 +267,39 @@ export default function ProfilePage() {
                             </div>
                         </div>
                     </div>
+                    {/* Reviews */}
+                    {reviews.length > 0 && (
+                        <div className={styles.section}>
+                            <div className={styles.sectionHeader}>
+                                <h2 className={styles.sectionTitle}>⭐ Reviews ({reviews.length})</h2>
+                            </div>
+                            <div className={styles.sectionBody}>
+                                {reviews.map((review) => (
+                                    <div key={review.id} style={{
+                                        padding: '14px 16px',
+                                        borderRadius: '10px',
+                                        background: 'var(--bg-main)',
+                                        border: '1px solid var(--border-light)',
+                                        marginBottom: '10px',
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                                            <span style={{ color: '#f59e0b', fontSize: '1rem', letterSpacing: '2px' }}>
+                                                {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                                            </span>
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                                                {new Date(review.createdAt).toLocaleDateString('tr-TR')}
+                                            </span>
+                                        </div>
+                                        {review.comment && (
+                                            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                                                &quot;{review.comment}&quot;
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

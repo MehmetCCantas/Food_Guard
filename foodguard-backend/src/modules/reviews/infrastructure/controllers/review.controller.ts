@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Param,
   ParseUUIDPipe,
@@ -47,5 +48,14 @@ export class ReviewController {
       userId,
     );
     return new ReviewResponseDto(review);
+  }
+
+  @Get('/donor/:donorId')
+  @ApiOperation({ summary: 'Get all reviews for a donor (public)' })
+  async getDonorReviews(
+    @Param('donorId', ParseUUIDPipe) donorId: string,
+  ): Promise<ReviewResponseDto[]> {
+    const reviews = await this.reviewService.getDonorReviews(donorId);
+    return reviews.map((r) => new ReviewResponseDto(r));
   }
 }

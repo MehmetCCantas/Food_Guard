@@ -9,4 +9,5 @@ export interface IReviewService {
     requestId: string,
     userId: string,
   ): Promise<Review>;
+  getDonorReviews(donorId: string): Promise<Review[]>;
 }

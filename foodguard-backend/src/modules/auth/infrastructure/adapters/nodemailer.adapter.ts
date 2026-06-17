@@ -1,35 +1,72 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import axios from 'axios';
 import { IEmailService } from '../../application/ports/out/auth.out-ports';
 
 @Injectable()
 export class NodemailerAdapter implements IEmailService {
   private readonly logger = new Logger(NodemailerAdapter.name);
-  private transporter: nodemailer.Transporter;
+  private transporter: nodemailer.Transporter | null = null;
+  private readonly resendApiKey: string | undefined;
 
   constructor(private readonly configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      host: this.configService.get<string>('MAIL_HOST', 'smtp.gmail.com'),
-      port: this.configService.get<number>('MAIL_PORT', 587),
-      secure: false,
-      auth: {
-        user: this.configService.get<string>('MAIL_USER'),
-        pass: this.configService.get<string>('MAIL_PASS'),
-      },
-    });
+    this.resendApiKey = this.configService.get<string>('RESEND_API_KEY');
 
-    this.transporter.verify((error) => {
-      if (error) {
-        this.logger.error('❌ Email transporter connection failed:', error.message);
-      } else {
-        this.logger.log('✅ Email transporter is ready to send messages');
+    if (this.resendApiKey) {
+      this.logger.log('🚀 Using Resend API for sending emails (production mode)');
+    } else {
+      this.logger.warn('⚠️ RESEND_API_KEY not set — falling back to Gmail SMTP');
+      this.transporter = nodemailer.createTransport({
+        host: this.configService.get<string>('MAIL_HOST', 'smtp.gmail.com'),
+        port: this.configService.get<number>('MAIL_PORT', 587),
+        secure: false,
+        auth: {
+          user: this.configService.get<string>('MAIL_USER'),
+          pass: this.configService.get<string>('MAIL_PASS'),
+        },
+      });
+
+      this.transporter.verify((error) => {
+        if (error) {
+          this.logger.error('❌ Email transporter connection failed:', error.message);
+        } else {
+          this.logger.log('✅ Email transporter is ready to send messages');
+        }
+      });
+    }
+  }
+
+  private async send(to: string, subject: string, html: string): Promise<void> {
+    const from = this.configService.get<string>('MAIL_FROM', 'FoodGuard <noreply.foodguard@gmail.com>');
+
+    if (this.resendApiKey) {
+      try {
+        const response = await axios.post(
+          'https://api.resend.com/emails',
+          { from, to, subject, html },
+          {
+            headers: {
+              Authorization: `Bearer ${this.resendApiKey}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        this.logger.log(`✅ Email sent via Resend API to: ${to} (id: ${response.data?.id})`);
+      } catch (error: any) {
+        const errData = error.response?.data || error.message;
+        this.logger.error(`❌ Resend API failed for ${to}: ${JSON.stringify(errData)}`);
+        throw error;
       }
-    });
+    } else if (this.transporter) {
+      await this.transporter.sendMail({ from, to, subject, html });
+      this.logger.log(`✅ Email sent via Gmail SMTP to: ${to}`);
+    } else {
+      throw new Error('No email provider configured');
+    }
   }
 
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-    const from = this.configService.get<string>('MAIL_FROM', 'FoodGuard <noreply@foodguard.com>');
     const resetUrl = `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000')}/reset-password?token=${token}`;
 
     const html = `
@@ -70,23 +107,10 @@ export class NodemailerAdapter implements IEmailService {
       </html>
     `;
 
-    try {
-      await this.transporter.sendMail({
-        from,
-        to: email,
-        subject: '🔑 Reset Your FoodGuard Password',
-        html,
-      });
-      this.logger.log(`✅ Password reset email sent to: ${email}`);
-    } catch (error: any) {
-      this.logger.error(`❌ Failed to send password reset email to ${email}: ${error.message}`);
-      throw error;
-    }
+    await this.send(email, '🔑 Reset Your FoodGuard Password', html);
   }
 
   async sendVerificationCode(email: string, code: string): Promise<void> {
-    const from = this.configService.get<string>('MAIL_FROM', 'FoodGuard <noreply@foodguard.com>');
-
     const html = `
       <!DOCTYPE html>
       <html>
@@ -130,17 +154,6 @@ export class NodemailerAdapter implements IEmailService {
       </html>
     `;
 
-    try {
-      await this.transporter.sendMail({
-        from,
-        to: email,
-        subject: '✅ Your FoodGuard Verification Code',
-        html,
-      });
-      this.logger.log(`✅ Verification code email sent to: ${email}`);
-    } catch (error: any) {
-      this.logger.error(`❌ Failed to send verification email to ${email}: ${error.message}`);
-      throw error;
-    }
+    await this.send(email, '✅ Your FoodGuard Verification Code', html);
   }
 }

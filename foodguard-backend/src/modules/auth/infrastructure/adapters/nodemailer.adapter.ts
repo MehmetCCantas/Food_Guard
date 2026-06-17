@@ -21,6 +21,7 @@ export class NodemailerAdapter implements IEmailService {
         host: this.configService.get<string>('MAIL_HOST', 'smtp.gmail.com'),
         port: this.configService.get<number>('MAIL_PORT', 587),
         secure: false,
+        family: 4, // Force IPv4 — Railway IPv6 cannot reach Gmail SMTP
         auth: {
           user: this.configService.get<string>('MAIL_USER'),
           pass: this.configService.get<string>('MAIL_PASS'),

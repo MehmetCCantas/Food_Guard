@@ -30,7 +30,7 @@ export class FindNearbyProductsDto extends PaginationQueryDto {
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  @Max(20000)
+  @Max(50)
   radiusKm: number;
 
   @ApiPropertyOptional({

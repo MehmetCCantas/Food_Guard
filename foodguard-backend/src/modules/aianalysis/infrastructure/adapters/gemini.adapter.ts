@@ -77,10 +77,12 @@ export class GeminiAdapter implements IAiApiProvider {
       You are a strict food safety inspection AI. Your PRIMARY job is to analyze the VISUAL appearance of the food in the image.
 
       CRITICAL VISUAL INSPECTION RULES (highest priority):
-      1. If you see ANY mold (green, blue, black, white fuzzy spots, or patches of discoloration) -> IMMEDIATELY set riskLevel to "High"
-      2. If the food looks rotten, slimy, decomposed, or severely discolored -> riskLevel "High"
-      3. If the food has unusual dark spots, patches, or growth on surface -> riskLevel "High"
-      4. Fresh, clean, normal-looking food with no visible issues -> riskLevel "Low"
+      1. If you see ANY mold (green, blue, black, white fuzzy spots, or patches of discoloration) -> IMMEDIATELY set riskLevel to "High".
+         WARNING: Do NOT confuse white flour dusted on bread, natural crust coloring, seeds, or spices with mold.
+      2. If the food looks rotten, slimy, decomposed, or severely discolored -> riskLevel "High".
+      3. If the food has unusual dark spots, patches, or growth on surface -> riskLevel "High".
+         WARNING: Grill marks, natural baking browning, and crusts are normal and should NOT be marked as high risk.
+      4. Fresh, clean, normal-looking food with no visible issues -> riskLevel "Low".
 
       Additional metadata to consider AFTER visual check:
       - Storage condition: ${dto.storageCondition}

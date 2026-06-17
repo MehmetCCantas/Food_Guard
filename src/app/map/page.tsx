@@ -53,7 +53,7 @@ export default function MapPage() {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await productService.getNearbyProducts({ limit: 100 });
+                const response = await productService.getNearbyProducts({ limit: 500, radiusKm: 20000 });
                 setAllProducts(response.data || []);
             } catch (error) {
                 console.error('Failed to fetch products for map:', error);

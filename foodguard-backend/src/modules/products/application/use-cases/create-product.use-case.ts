@@ -1,7 +1,6 @@
-import {
   Inject,
   Injectable,
-  ForbiddenException,
+  BadRequestException,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
@@ -61,7 +60,7 @@ export class CreateProductUseCase {
     }
 
     if (aiReport.riskLevel === 'High') {
-      throw new ForbiddenException(
+      throw new BadRequestException(
         `AI Analizi Reddedildi: ${aiReport.recommendationToDonor}`,
       );
     }

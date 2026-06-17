@@ -114,7 +114,7 @@ export default function RegisterPage() {
             {/* Left Branding Panel */}
             <div className={styles.brandPanel}>
                 <div className={styles.brandLogo}>🌱</div>
-                <h1 className={styles.brandTitle}>Join Food Guard</h1>
+                <h1 className={styles.brandTitle}>Join FoodGuard</h1>
                 <p className={styles.brandSubtitle}>
                     Be part of a community that fights food waste and feeds those in need.
                 </p>

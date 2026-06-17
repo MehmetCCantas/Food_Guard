@@ -80,7 +80,7 @@ export default function Navbar() {
                         style={{ height: 48, width: 'auto', maxWidth: 'none', marginLeft: '-29px', marginTop: '0px', display: 'block' }}
                     />
                 </div>
-                <span style={{ display: 'flex', alignItems: 'center', lineHeight: 1, marginTop: '2px' }}>Food Guard</span>
+                <span style={{ display: 'flex', alignItems: 'center', lineHeight: 1, marginTop: '2px' }}>FoodGuard</span>
             </Link>
 
             <div className={styles.navCenter}>

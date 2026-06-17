@@ -137,7 +137,7 @@ export default function ResetPasswordPage() {
             {/* Left Branding Panel */}
             <div className={styles.brandPanel}>
                 <div className={styles.brandLogo}>🍽️</div>
-                <h1 className={styles.brandTitle}>Food Guard Platform</h1>
+                <h1 className={styles.brandTitle}>FoodGuard Platform</h1>
                 <p className={styles.brandSubtitle}>
                     Share surplus food with those in need. Reduce waste, feed communities.
                 </p>

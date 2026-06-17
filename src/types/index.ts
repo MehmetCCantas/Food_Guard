@@ -1,5 +1,5 @@
 // ==========================================
-// Food Guard Platform — TypeScript Type Definitions
+// FoodGuard Platform — TypeScript Type Definitions
 // NestJS backend DTO'ları ile uyumlu
 // ==========================================
 

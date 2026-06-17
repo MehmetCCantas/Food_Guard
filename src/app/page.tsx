@@ -47,7 +47,7 @@ export default function LandingPage() {
                             style={{ height: 48, width: 'auto', maxWidth: 'none', marginLeft: '-29px', marginTop: '0px', display: 'block' }}
                         />
                     </div>
-                    <span style={{ display: 'flex', alignItems: 'center', lineHeight: 1, marginTop: '2px' }}>Food Guard</span>
+                    <span style={{ display: 'flex', alignItems: 'center', lineHeight: 1, marginTop: '2px' }}>FoodGuard</span>
                 </div>
                 <div className={styles.navActions}>
                     <Link href="/login" className={styles.navSignIn}>
@@ -258,7 +258,7 @@ export default function LandingPage() {
                 <div className={styles.ctaBox}>
                     <h2 className={styles.ctaTitle}>Ready to Make a Difference?</h2>
                     <p className={styles.ctaDesc}>
-                        Join thousands of donors and recipients already using Food Guard 
+                        Join thousands of donors and recipients already using FoodGuard 
                         to reduce food waste in their communities.
                     </p>
                     <div className={styles.ctaButtons}>
@@ -275,7 +275,7 @@ export default function LandingPage() {
             {/* ---- Footer ---- */}
             <footer className={styles.footer}>
                 <p className={styles.footerText}>
-                    © 2025 Food Guard Platform — Built with{' '}
+                    © 2025 FoodGuard Platform — Built with{' '}
                     <Heart size={14} className={styles.footerHeart} fill="#e74c3c" /> to fight food waste
                 </p>
             </footer>

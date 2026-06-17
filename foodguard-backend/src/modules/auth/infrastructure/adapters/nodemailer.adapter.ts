@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import axios from 'axios';
 import { IEmailService } from '../../application/ports/out/auth.out-ports';
 
@@ -17,7 +18,7 @@ export class NodemailerAdapter implements IEmailService {
       this.logger.log('🚀 Using Resend API for sending emails (production mode)');
     } else {
       this.logger.warn('⚠️ RESEND_API_KEY not set — falling back to Gmail SMTP');
-      this.transporter = nodemailer.createTransport({
+      this.transporter = nodemailer.createTransport(<SMTPTransport.Options>{
         host: this.configService.get<string>('MAIL_HOST', 'smtp.gmail.com'),
         port: this.configService.get<number>('MAIL_PORT', 587),
         secure: false,
